@@ -1,8 +1,13 @@
 <script setup lang="ts">
-const { data: newsEntries } = await useAsyncData('news-list', () =>
-  queryContent('news')
-    .sort({ date: -1 })
-    .find()
+import type { ParsedContent } from '@nuxt/content'
+
+const { data: newsEntries } = await useAsyncData<ParsedContent[]>(
+  'news-list',
+  () =>
+    queryContent('news')
+      .sort({ date: -1 })
+      .find(),
+  { default: () => [] }
 )
 
 const formatDate = (value?: string | Date) => {

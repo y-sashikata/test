@@ -1,17 +1,35 @@
+<script setup lang="ts">
+const navLinks = [
+  { label: 'お知らせ', to: '/news' },
+  { label: '会社概要', to: '/company' },
+]
+
+const isMenuOpen = ref(false)
+
+const toggleMenu = () => {
+  isMenuOpen.value = !isMenuOpen.value
+}
+
+const closeMenu = () => {
+  isMenuOpen.value = false
+}
+</script>
+
 <template>
   <div class="layout">
     <header class="layout__header">
-      <NuxtLink class="logo" to="/">Nuxt Content Demo</NuxtLink>
-      <nav>
-        <NuxtLink to="/news">お知らせ</NuxtLink>
-        <NuxtLink to="/company">会社概要</NuxtLink>
-        <a href="/admin" rel="noopener">管理画面</a>
+      <NuxtLink class="logo" to="/">Demo Company</NuxtLink>
+      <nav class="layout__nav" :class="{ 'layout__nav--open': isMenuOpen }">
+        <NuxtLink v-for="link in navLinks" :key="link.to" :to="link.to" @click="closeMenu">{{ link.label }}</NuxtLink>
+        <a href="/admin" rel="noopener" @click="closeMenu">管理画面</a>
       </nav>
+      <button class="layout__toggle" type="button" aria-label="メニューを開閉" @click="toggleMenu">
+        <span :class="{ open: isMenuOpen }"></span>
+      </button>
     </header>
     <slot />
     <footer class="layout__footer">
       <p>© {{ new Date().getFullYear() }} Company inc.</p>
-      <p>Decap CMS + Nuxt で静的サイトを運用</p>
     </footer>
   </div>
 </template>
@@ -39,25 +57,19 @@
   z-index: 10;
 }
 
-.layout__header nav {
+.layout__nav {
   display: flex;
   gap: 1rem;
 }
 
-.layout__header a {
+.layout__nav a {
   text-decoration: none;
   color: #1f2937;
   font-weight: 600;
 }
 
-.layout__header a.router-link-active {
+.layout__nav a.router-link-active {
   color: #059669;
-}
-
-.logo {
-  font-weight: 700;
-  text-transform: uppercase;
-  letter-spacing: 0.1em;
 }
 
 .layout__footer {
@@ -69,5 +81,81 @@
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.75rem;
+}
+
+.layout__toggle {
+  display: none;
+  position: relative;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  border: 1px solid #d1d5db;
+  background: transparent;
+}
+
+.layout__toggle span,
+.layout__toggle span::before,
+.layout__toggle span::after {
+  content: '';
+  position: absolute;
+  width: 22px;
+  height: 2px;
+  background: #111827;
+  left: 50%;
+  transform: translateX(-50%);
+  transition: 0.3s;
+}
+
+.layout__toggle span {
+  top: 50%;
+}
+
+.layout__toggle span::before {
+  top: -6px;
+}
+
+.layout__toggle span::after {
+  top: 6px;
+}
+
+.layout__toggle span.open {
+  background: transparent;
+}
+
+.layout__toggle span.open::before {
+  transform: translate(-50%, 6px) rotate(45deg);
+}
+
+.layout__toggle span.open::after {
+  transform: translate(-50%, -6px) rotate(-45deg);
+}
+
+@media (max-width: 768px) {
+  .layout__nav {
+    position: absolute;
+    top: calc(100% + 0.5rem);
+    right: 1.5rem;
+    flex-direction: column;
+    align-items: flex-start;
+    padding: 1.5rem;
+    background: #fff;
+    border: 1px solid #e5e7eb;
+    border-radius: 12px;
+    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.1);
+    opacity: 0;
+    pointer-events: none;
+    transform: translateY(-10px);
+    transition: 0.2s ease;
+  }
+
+  .layout__nav--open {
+    opacity: 1;
+    pointer-events: auto;
+    transform: translateY(0);
+  }
+
+  .layout__toggle {
+    display: block;
+  }
 }
 </style>
