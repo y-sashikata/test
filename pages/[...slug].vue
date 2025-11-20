@@ -4,10 +4,7 @@ const slug = route.params.slug
 const path = Array.isArray(slug) ? `/${slug.join('/')}` : `/${slug}`
 
 const { data: page } = await useAsyncData(
-  () =>
-    queryContent()
-      .where({ _path: path })
-      .findOne(),
+  () => queryCollection('pages').path(path).first(),
   { watch: [() => route.fullPath] }
 )
 

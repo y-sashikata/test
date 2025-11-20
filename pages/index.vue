@@ -15,19 +15,19 @@ type Slide = {
 
 const slides: Slide[] = [
   {
-    title: 'テストイメージ１',
-    caption: 'あああああああああああああああああ',
-    image: '/images/img1.jpeg',
+    title: '',
+    caption: '株式会社ディーソルはデータソリューションカンパニーです。ITと紙の「ハイブリッドDX」を提案します。',
+    image: '/images/img_main_50th-1.png',
   },
   {
-    title: 'テストイメージ２',
-    caption: 'いいいいいいいいいいいいいいいいいいいいいい',
+    title: '',
+    caption: '社会に優しい信頼される企業を目指します。 地球環境への負担を低減し、持続可能な社会の貢献をいたします。',
     image: '/images/img2.jpeg',
   },
   {
-    title: 'テストイメージ３',
-    caption: 'うううううううううううううううううううううううううううううううううう',
-    image: '/images/img3.jpeg',
+    title: '',
+    caption: 'オリジナル紙製ホルダー専門ECサイト「プレコオンラインオーダー」はじめました！',
+    image: '/images/HPクリアプレコ_20240722_2_2.png',
   },
 ]
 
@@ -62,26 +62,82 @@ onBeforeUnmount(() => {
   stopSlider()
 })
 
-const { data: latestNews } = await useAsyncData<ParsedContent[]>(
-  'home-news',
-  () =>
-    queryContent('news')
-      .sort({ date: -1 })
-      .limit(3)
-      .find(),
-  { default: () => [] }
-)
-
-const formatDate = (value?: string | Date) => {
-  if (!value) return ''
-  return new Date(value).toLocaleDateString('ja-JP')
-}
+const promos = [
+  {
+    badge: 'IT SOLUTION',
+    title: 'WDSシステム',
+    campaign: '6ヵ月無料キャンペーン実施中！！',
+    deadline: '※2025年11月申し込み限り',
+    description: ['シンプルで操作簡単なWEB請求書システムです。', 'コストダウン（郵送料・事務コスト）', 'スピード向上', '人的ミス削減', '受信側も登録ができる'],
+    highlight: '好評につき、スパ対応版を公開しました',
+    image: '/images/promo_wds.png',
+    theme: 'blue',
+  },
+  {
+    badge: 'PAPER SUPPLY',
+    title: 'クリアプレコ',
+    campaign: 'サンプル無料配布中！！',
+    description: [
+      'クリアプレコは、100%紙製のクリアホルダーです。',
+      '環境にやさしく、耐水性と強度、半透明がきれいに際立つ製品です。A4、A5、B6サイズを用意しました。会社ロゴを印刷したオリジナルをお送りします。お問い合わせよりお申込みください。',
+    ],
+    image: '/images/promo_clearpreco.png',
+    theme: 'green',
+  },
+  {
+    badge: 'IT SOLUTION',
+    title: 'スマホ発注WEB（EOSサービス）',
+    description: [
+      '直感的に使える簡単操作',
+      'いつでもどこでも注文可能',
+      '受注作業にかかる作業時間削減',
+      '注文受付時間の大幅延長',
+      '専用サーバーなどの設備要件なし',
+      'バーコード(JAN)読み取り 新機能2024年6月～',
+    ],
+    image: '/images/promo_eos.png',
+    theme: 'blue',
+  },
+  {
+    badge: 'IT SOLUTION',
+    title: '紙を捨てないDX',
+    description: [
+      '自治体DXへのご提案',
+      '行政業務が抱える課題',
+      'ティーソルの特徴と強み',
+      'ティーソルが提供する解決策例',
+      '導入事例（例）',
+      'システム連携・構成（例）',
+      '今後の展望',
+      'まとめ',
+    ],
+    image: '/images/promo_dx.png',
+    theme: 'blue',
+  },
+  {
+    badge: 'IT SOLUTION',
+    title: '情報提供のワンストップサービス',
+    description: [
+      '「入力」「開発」「処理」「出力」サービスを提供します。',
+      '全国の自社センターをセキュリティ通信網で結び、一連の流れを実現しました。',
+    ],
+    image: '/images/promo_total.png',
+    theme: 'blue',
+  },
+  {
+    badge: 'PAPER SUPPLY',
+    title: '情報帳票',
+    description: [
+      '情報媒体としての製品を自社の生産ラインで製造しています。使用目的に応じて、大量から少量まで、柔軟に対応いたします。感圧紙、特殊紙加工、製本など印刷にかかわるもの全般を提供します。',
+    ],
+    image: '/images/promo_paper.png',
+    theme: 'green',
+  },
+]
 </script>
 
 <template>
   <main class="home">
-
-
     <section class="hero-visual">
       <div class="hero__carousel" @mouseenter="stopSlider" @mouseleave="startSlider">
         <ul class="carousel__track" :style="{ transform: `translateX(-${activeSlide * 100}%)` }">
@@ -106,32 +162,25 @@ const formatDate = (value?: string | Date) => {
       </div>
     </section>
 
-    <section class="latest-news">
-      <header>
-        <div>
-          <p class="eyebrow">Latest</p>
-          <h2>最新のお知らせ</h2>
+    <section class="promos">
+      <article v-for="promo in promos" :key="promo.title" class="promo-card" :class="`promo-card--${promo.theme}`">
+        <div class="promo-card__content">
+          <p class="promo-card__badge">{{ promo.badge }}</p>
+          <div class="promo-card__heading">
+            <h3>{{ promo.title }}</h3>
+            <div v-if="promo.campaign" class="promo-card__campaign">
+              <span>{{ promo.campaign }}</span>
+              <small v-if="promo.deadline">{{ promo.deadline }}</small>
+            </div>
+          </div>
+          <ul class="promo-card__list">
+            <li v-for="line in promo.description" :key="line">{{ line }}</li>
+          </ul>
+          <p v-if="promo.highlight" class="promo-card__highlight">{{ promo.highlight }}</p>
         </div>
-        <NuxtLink class="link" to="/news">すべて見る</NuxtLink>
-      </header>
-      <ul>
-        <li v-for="article in latestNews" :key="article._path">
-          <NuxtLink :to="article._path">{{ article.title }}</NuxtLink>
-          <p class="latest-news__meta">{{ formatDate(article.date) }}</p>
-          <p>{{ article.description }}</p>
-        </li>
-      </ul>
-    </section>
-    <section class="sections">
-      <article>
-        <p class="eyebrow">ううううう</p>
-        <h2>テストテスト</h2>
-        <p>てすとてすとてすとてすと</p>
-      </article>
-      <article>
-        <p class="eyebrow"></p>
-        <h2>testtest</h2>
-        <p>あああああああああああああああああああああああああああああああああああああ</p>
+        <div class="promo-card__image">
+          <img :src="promo.image" :alt="promo.title" />
+        </div>
       </article>
     </section>
   </main>
@@ -232,6 +281,9 @@ const formatDate = (value?: string | Date) => {
 
 .hero-visual {
   margin-top: 0.5rem;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
 }
 
 .hero__carousel {
@@ -247,14 +299,16 @@ const formatDate = (value?: string | Date) => {
 }
 
 .carousel__item {
-  min-width: 100%;
+  flex: 0 0 100vw;
+  min-width: 100vw;
   position: relative;
 }
 
 .carousel__item img {
   width: 100%;
-  height: 320px;
+  height: 620px;
   object-fit: cover;
+  object-position: center;
   display: block;
 }
 
@@ -324,93 +378,103 @@ const formatDate = (value?: string | Date) => {
   flex-wrap: wrap;
 }
 
-.sections {
+.promos {
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+}
+
+.promo-card {
   display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  grid-template-columns: 1.3fr 0.7fr;
   gap: 1.5rem;
-}
-
-.sections article {
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 1.5rem;
-  background: #f8fafc;
-}
-
-.btn {
-  border: 1px solid #ccc;
-  border-radius: 999px;
-  padding: 0.75rem 1.5rem;
-  text-decoration: none;
-  color: inherit;
-  font-weight: 600;
-}
-
-.btn--primary {
-  background: #059669;
-  border-color: #059669;
+  border-radius: 32px;
+  padding: 2.5rem;
   color: #fff;
+  box-shadow: 0 30px 60px rgba(5, 28, 77, 0.25);
 }
 
-.btn--ghost {
-  border-color: #d1d5db;
+.promo-card--blue {
+  background: linear-gradient(135deg, #0f3793, #06255f);
 }
 
-.eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
-  font-size: 0.85rem;
-  color: #697077;
+.promo-card--green {
+  background: linear-gradient(135deg, #8db60e, #5f8d05);
+}
+
+.promo-card__badge {
+  font-weight: 700;
+  letter-spacing: 0.1em;
   margin: 0 0 0.35rem;
 }
 
-.latest-news {
-  border: 1px solid #e5e7eb;
-  border-radius: 16px;
-  padding: 2rem;
-  background: #fff;
-}
-
-.latest-news header {
+.promo-card__heading {
   display: flex;
   justify-content: space-between;
-  align-items: baseline;
+  align-items: flex-start;
   gap: 1rem;
   flex-wrap: wrap;
 }
 
-.latest-news ul {
-  list-style: none;
-  padding: 0;
-  margin: 1.5rem 0 0;
+.promo-card__heading h3 {
+  margin: 0;
+  font-size: 1.9rem;
+}
+
+.promo-card__campaign {
+  background: #fff;
+  color: #bd1f1f;
+  border-radius: 999px;
+  padding: 0.4rem 1rem;
   display: flex;
   flex-direction: column;
-  gap: 1.25rem;
+  font-weight: 700;
+  font-size: 0.95rem;
 }
 
-.latest-news li {
-  padding: 1.25rem;
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
+.promo-card__campaign small {
+  color: #0f172a;
+  font-size: 0.7rem;
 }
 
-.latest-news li a {
-  font-size: 1.1rem;
-  font-weight: 600;
-  text-decoration: none;
-  color: #065f46;
+.promo-card__list {
+  list-style: none;
+  margin: 0.75rem 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
 }
 
-.latest-news__meta {
-  color: #6b7280;
-  font-size: 0.9rem;
-  margin: 0.25rem 0 0.5rem;
+.promo-card__list li {
+  position: relative;
+  padding-left: 1.1rem;
 }
 
-.link {
-  color: #059669;
-  text-decoration: none;
-  font-weight: 600;
+.promo-card__list li::before {
+  content: '•';
+  position: absolute;
+  left: 0;
+  color: rgba(255, 255, 255, 0.8);
+}
+
+.promo-card__highlight {
+  margin: 0.5rem 0 0;
+  font-weight: 700;
+}
+
+.promo-card__image {
+  display: flex;
+  justify-content: flex-end;
+  align-items: center;
+}
+
+.promo-card__image img {
+  max-width: 280px;
+  width: 100%;
+  border-radius: 14px;
+  background: #fff;
+  padding: 0.5rem;
 }
 
 @media (max-width: 768px) {
@@ -444,6 +508,14 @@ const formatDate = (value?: string | Date) => {
 
   .header__toggle {
     display: block;
+  }
+
+  .promo-card {
+    grid-template-columns: 1fr;
+  }
+
+  .promo-card__image {
+    justify-content: center;
   }
 }
 </style>

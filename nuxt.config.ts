@@ -5,5 +5,6 @@
     modules: ['@nuxt/content'],
     nitro: {
       preset: 'static',
+      prerender: { failOnError: false }
     },
   })

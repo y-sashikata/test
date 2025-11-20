@@ -1,103 +1,147 @@
 <script setup lang="ts">
+import { queryCollection } from '#imports'
 import type { ParsedContent } from '@nuxt/content'
 
 const { data: newsEntries } = await useAsyncData<ParsedContent[]>(
   'news-list',
-  () =>
-    queryContent('news')
-      .sort({ date: -1 })
-      .find(),
+  () => queryCollection('news').order('date', 'DESC').all(),
   { default: () => [] }
 )
 
 const formatDate = (value?: string | Date) => {
   if (!value) return ''
-  return new Date(value).toLocaleDateString('ja-JP', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric',
-  })
+  const date = new Date(value)
+  const year = date.getFullYear()
+  const month = `${date.getMonth() + 1}`.padStart(2, '0')
+  const day = `${date.getDate()}`.padStart(2, '0')
+  return `${year}.${month}.${day}`
 }
 </script>
 
 <template>
-  <main class="news-page">
-    <header class="news-page__header">
-      <p class="eyebrow">News</p>
-      <h1>お知らせ</h1>
-      <p>Decap CMS で登録したニュースを日付の新しい順で表示しています。</p>
+  <main class="release-page">
+    <header class="release-hero">
+      <p class="release-hero__eyebrow">NEWS RELEASE</p>
+      <h1>ニュースリリース</h1>
     </header>
 
-    <ul v-if="newsEntries?.length" class="news-list">
-      <li v-for="article in newsEntries" :key="article._path">
-        <NuxtLink :to="article._path">{{ article.title }}</NuxtLink>
-        <p class="news-list__meta">
+    <section class="release-panel">
+      <div class="release-panel__label">NEWS RELEASE</div>
+      <ul v-if="newsEntries?.length" class="release-list">
+        <li v-for="article in newsEntries" :key="article._path">
           <time :datetime="article.date">{{ formatDate(article.date) }}</time>
-        </p>
-        <p>{{ article.description }}</p>
-      </li>
-    </ul>
-
-    <p v-else class="news-empty">まだお知らせは登録されていません。</p>
+          <NuxtLink :to="article._path">{{ article.title }}</NuxtLink>
+        </li>
+      </ul>
+      <p v-else class="release-empty">現在表示できるニュースリリースはありません。</p>
+    </section>
   </main>
 </template>
 
 <style scoped>
-.news-page {
+.release-page {
   margin: 0 auto;
-  max-width: 800px;
-  padding: 3rem 1.5rem;
+  max-width: 920px;
+  padding: 3rem 1.5rem 4rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
 }
 
-.news-page__header {
+.release-hero {
   display: flex;
   flex-direction: column;
   gap: 0.75rem;
-  margin-bottom: 2rem;
 }
 
-.news-page__header h1 {
+.release-hero h1 {
   margin: 0;
-  font-size: clamp(2rem, 4vw, 2.5rem);
+  font-size: clamp(2.2rem, 4vw, 2.8rem);
+  letter-spacing: 0.05em;
 }
 
-.eyebrow {
-  text-transform: uppercase;
-  letter-spacing: 0.12em;
+.release-hero__eyebrow {
   font-size: 0.85rem;
-  color: #697077;
+  letter-spacing: 0.3em;
+  color: #2563eb;
   margin: 0;
 }
 
-.news-list {
-  list-style: none;
+.release-hero__lead {
+  margin: 0;
+  color: #475467;
+  line-height: 1.8;
+}
+
+.release-panel {
+  border: 1px solid #dbe4ff;
+  border-radius: 16px;
+  background: linear-gradient(180deg, #f8fbff 0%, #fff 35%);
   padding: 0;
-  margin: 0;
-  display: flex;
-  flex-direction: column;
-  gap: 1.5rem;
+  overflow: hidden;
+  box-shadow: 0 18px 35px rgba(15, 23, 42, 0.08);
 }
 
-.news-list li {
-  border: 1px solid #e5e7eb;
-  border-radius: 12px;
-  padding: 1.5rem;
-}
-
-.news-list li a {
-  font-size: 1.2rem;
+.release-panel__label {
+  background: #1d4ed8;
+  color: #fff;
   font-weight: 600;
-  color: #065f46;
+  letter-spacing: 0.2em;
+  padding: 0.85rem 1.5rem;
+}
+
+.release-list {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.release-list li {
+  display: grid;
+  grid-template-columns: minmax(140px, 180px) 1fr;
+  gap: 1.5rem;
+  align-items: center;
+  padding: 1.25rem 1.5rem;
+  border-top: 1px solid #e2e8f0;
+}
+
+.release-list li:first-of-type {
+  border-top-color: transparent;
+}
+
+.release-list time {
+  font-size: 1rem;
+  letter-spacing: 0.08em;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+.release-list a {
+  color: #0f172a;
+  font-size: 1.05rem;
   text-decoration: none;
+  line-height: 1.6;
 }
 
-.news-list__meta {
-  margin: 0.35rem 0 0.75rem;
-  color: #6b7280;
-  font-size: 0.95rem;
+.release-list a:hover {
+  color: #2563eb;
+  text-decoration: underline;
 }
 
-.news-empty {
-  color: #6b7280;
+.release-empty {
+  margin: 0;
+  padding: 2rem 1.5rem;
+  color: #64748b;
+}
+
+@media (max-width: 600px) {
+  .release-list li {
+    grid-template-columns: 1fr;
+    gap: 0.5rem;
+  }
+
+  .release-list time {
+    font-size: 0.95rem;
+  }
 }
 </style>

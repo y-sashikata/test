@@ -1,12 +1,12 @@
 <script setup lang="ts">
+import { queryCollection } from '#imports'
+
 const route = useRoute()
 const slugParam = route.params.slug
+const articlePath = `/news/${Array.isArray(slugParam) ? slugParam.join('/') : slugParam}`
 
 const { data: article } = await useAsyncData(
-  () =>
-    queryContent('news')
-      .where({ _path: `/news/${Array.isArray(slugParam) ? slugParam.join('/') : slugParam}` })
-      .findOne(),
+  () => queryCollection('news').path(articlePath).first(),
   { watch: [() => route.fullPath] }
 )
 
@@ -28,7 +28,7 @@ const formatDate = (value?: string | Date) => {
   <main class="article-page">
     <article>
       <p class="article-page__meta">
-        <NuxtLink class="article-page__back" to="/news">← お知らせ一覧に戻る</NuxtLink>
+        <NuxtLink class="article-page__back" to="/news">お知らせ一覧に戻る</NuxtLink>
         <time :datetime="article?.date">{{ formatDate(article?.date) }}</time>
       </p>
       <h1>{{ article?.title }}</h1>
