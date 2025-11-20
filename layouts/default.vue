@@ -40,7 +40,7 @@ const navSections: NavSection[] = [
       {
         title: 'システム',
         items: [
-          { label: 'AIの取り組み', to: '' },
+          { label: 'AIの取り組み', to: '/system' },
           { label: 'リカーエース', to: '' },
           { label: '受発注業務支援サービス（EOS）', to: '' },
           { label: '帳票Web配信サービス「Web Delivery Service」', to: '' },
@@ -126,11 +126,11 @@ const navSections: NavSection[] = [
   },
   {
     label: '採用情報',
-    to: '/recruit',
+    to: '',
   },
   {
     label: 'お問い合わせ',
-    to: '/contact',
+    to: '',
   },
 ]
 
@@ -351,6 +351,10 @@ const toggleGroup = (key: string) => {
   border-bottom-right-radius: 6px;
   flex-wrap: wrap;
   justify-content: flex-start;
+  max-height: 70vh;
+  overflow-y: auto;
+  min-width: 300px;
+  max-width: 300px;
 }
 
 .nav-item__dropdown--open {
@@ -499,6 +503,8 @@ const toggleGroup = (key: string) => {
     pointer-events: none;
     transform: translateY(-10px);
     transition: 0.2s ease;
+    max-height: calc(100vh - 60px);
+    overflow-y: auto;
   }
 
   .layout__nav--open {
@@ -528,6 +534,14 @@ const toggleGroup = (key: string) => {
     display: none;
     background: #003f86;
     color: #fff;
+    width: 100%;
+    max-height: none;
+    overflow: visible;
+  }
+
+  .nav-group {
+    min-width: 100%;
+    max-width: 100%;
   }
 
   .nav-item__dropdown--open {

@@ -11,6 +11,7 @@ type Slide = {
   title: string
   caption: string
   image: string
+  link?: string
 }
 
 const slides: Slide[] = [
@@ -18,16 +19,19 @@ const slides: Slide[] = [
     title: '',
     caption: '株式会社ディーソルはデータソリューションカンパニーです。ITと紙の「ハイブリッドDX」を提案します。',
     image: '/images/img_main_50th-1.png',
+    link: '',
   },
   {
     title: '',
     caption: '社会に優しい信頼される企業を目指します。 地球環境への負担を低減し、持続可能な社会の貢献をいたします。',
     image: '/images/img2.jpeg',
+    link: '',
   },
   {
     title: '',
     caption: 'オリジナル紙製ホルダー専門ECサイト「プレコオンラインオーダー」はじめました！',
     image: '/images/HPクリアプレコ_20240722_2_2.png',
+    link: 'https://clearprieco.d2sol.co.jp/',
   },
 ]
 
@@ -69,8 +73,8 @@ const promos = [
     campaign: '6ヵ月無料キャンペーン実施中！！',
     deadline: '※2025年11月申し込み限り',
     description: ['シンプルで操作簡単なWEB請求書システムです。', 'コストダウン（郵送料・事務コスト）', 'スピード向上', '人的ミス削減', '受信側も登録ができる'],
-    highlight: '好評につき、スパ対応版を公開しました',
-    image: '/images/promo_wds.png',
+    highlight: '好評につき、スマホ対応版を公開しました',
+    image: '/images/WDS_PCと請求書_20251029_small.png',
     theme: 'blue',
   },
   {
@@ -81,7 +85,7 @@ const promos = [
       'クリアプレコは、100%紙製のクリアホルダーです。',
       '環境にやさしく、耐水性と強度、半透明がきれいに際立つ製品です。A4、A5、B6サイズを用意しました。会社ロゴを印刷したオリジナルをお送りします。お問い合わせよりお申込みください。',
     ],
-    image: '/images/promo_clearpreco.png',
+    image: '/images/HPクリアプレコ_20240722_2_2.png',
     theme: 'green',
   },
   {
@@ -95,7 +99,7 @@ const promos = [
       '専用サーバーなどの設備要件なし',
       'バーコード(JAN)読み取り 新機能2024年6月～',
     ],
-    image: '/images/promo_eos.png',
+    image: '/images/EOSスマホ_調整.png',
     theme: 'blue',
   },
   {
@@ -111,26 +115,26 @@ const promos = [
       '今後の展望',
       'まとめ',
     ],
-    image: '/images/promo_dx.png',
+    image: '/images/紙を捨てないDXサークル図-300x232.png',
     theme: 'blue',
   },
   {
     badge: 'IT SOLUTION',
-    title: '情報提供のワンストップサービス',
+    title: '',
     description: [
       '「入力」「開発」「処理」「出力」サービスを提供します。',
       '全国の自社センターをセキュリティ通信網で結び、一連の流れを実現しました。',
     ],
-    image: '/images/promo_total.png',
+    image: '',
     theme: 'blue',
   },
   {
     badge: 'PAPER SUPPLY',
-    title: '情報帳票',
+    title: '',
     description: [
       '情報媒体としての製品を自社の生産ラインで製造しています。使用目的に応じて、大量から少量まで、柔軟に対応いたします。感圧紙、特殊紙加工、製本など印刷にかかわるもの全般を提供します。',
     ],
-    image: '/images/promo_paper.png',
+    image: '',
     theme: 'green',
   },
 ]
@@ -141,11 +145,25 @@ const promos = [
     <section class="hero-visual">
       <div class="hero__carousel" @mouseenter="stopSlider" @mouseleave="startSlider">
         <ul class="carousel__track" :style="{ transform: `translateX(-${activeSlide * 100}%)` }">
-          <li v-for="slide in slides" :key="slide.title" class="carousel__item">
-            <img :src="slide.image" :alt="slide.title" loading="lazy" />
-            <div class="carousel__caption">
-              <h3>{{ slide.title }}</h3>
-              <p>{{ slide.caption }}</p>
+          <li v-for="slide in slides" :key="slide.title + slide.image" class="carousel__item">
+            <NuxtLink
+              v-if="slide.link"
+              class="carousel__link"
+              :to="slide.link"
+              @click="stopSlider"
+            >
+              <img :src="slide.image" :alt="slide.title" loading="lazy" />
+              <div class="carousel__caption">
+                <h3>{{ slide.title }}</h3>
+                <p>{{ slide.caption }}</p>
+              </div>
+            </NuxtLink>
+            <div v-else class="carousel__link">
+              <img :src="slide.image" :alt="slide.title" loading="lazy" />
+              <div class="carousel__caption">
+                <h3>{{ slide.title }}</h3>
+                <p>{{ slide.caption }}</p>
+              </div>
             </div>
           </li>
         </ul>
@@ -302,6 +320,13 @@ const promos = [
   flex: 0 0 100vw;
   min-width: 100vw;
   position: relative;
+}
+
+.carousel__link {
+  display: block;
+  height: 100%;
+  color: inherit;
+  text-decoration: none;
 }
 
 .carousel__item img {
