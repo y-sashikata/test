@@ -1,8 +1,10 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { queryCollection } from '#imports'
 import type { ParsedContent } from '@nuxt/content'
 
-const { data: newsEntries } = await useAsyncData<ParsedContent[]>(
+type NewsEntry = ParsedContent & { path: string }
+
+const { data: newsEntries } = await useAsyncData<NewsEntry[]>(
   'news-list',
   () => queryCollection('news').order('date', 'DESC').all(),
   { default: () => [] }
@@ -20,128 +22,107 @@ const formatDate = (value?: string | Date) => {
 
 <template>
   <main class="release-page">
-    <header class="release-hero">
-      <p class="release-hero__eyebrow">NEWS RELEASE</p>
+    <header class="release-header">
       <h1>ニュースリリース</h1>
     </header>
 
-    <section class="release-panel">
-      <div class="release-panel__label">NEWS RELEASE</div>
-      <ul v-if="newsEntries?.length" class="release-list">
-        <li v-for="article in newsEntries" :key="article._path">
+    <ul v-if="newsEntries?.length" class="release-list">
+      <li v-for="article in newsEntries" :key="article.path">
+        <NuxtLink class="release-item" :to="article.path">
           <time :datetime="article.date">{{ formatDate(article.date) }}</time>
-          <NuxtLink :to="article._path">{{ article.title }}</NuxtLink>
-        </li>
-      </ul>
-      <p v-else class="release-empty">現在表示できるニュースリリースはありません。</p>
-    </section>
+          <span class="release-item__title">{{ article.title }}</span>
+        </NuxtLink>
+      </li>
+    </ul>
+    <p v-else class="release-empty">現在表示できるニュースリリースはありません。</p>
   </main>
 </template>
 
 <style scoped>
 .release-page {
   margin: 0 auto;
-  max-width: 920px;
-  padding: 3rem 1.5rem 4rem;
-  display: flex;
-  flex-direction: column;
-  gap: 2rem;
+  width: min(1100px, 100%);
+  padding: 2rem 1rem 3rem;
 }
 
-.release-hero {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem;
-}
-
-.release-hero h1 {
+.release-header h1 {
   margin: 0;
-  font-size: clamp(2.2rem, 4vw, 2.8rem);
-  letter-spacing: 0.05em;
-}
-
-.release-hero__eyebrow {
-  font-size: 0.85rem;
-  letter-spacing: 0.3em;
-  color: #2563eb;
-  margin: 0;
-}
-
-.release-hero__lead {
-  margin: 0;
-  color: #475467;
-  line-height: 1.8;
-}
-
-.release-panel {
-  border: 1px solid #dbe4ff;
-  border-radius: 16px;
-  background: linear-gradient(180deg, #f8fbff 0%, #fff 35%);
-  padding: 0;
-  overflow: hidden;
-  box-shadow: 0 18px 35px rgba(15, 23, 42, 0.08);
-}
-
-.release-panel__label {
-  background: #1d4ed8;
-  color: #fff;
-  font-weight: 600;
-  letter-spacing: 0.2em;
-  padding: 0.85rem 1.5rem;
+  font-size: clamp(1.75rem, 4vw, 2.2rem);
+  border-bottom: 2px solid #1d4ed8;
+  padding-bottom: 0.6rem;
+  text-align: left;
 }
 
 .release-list {
-  margin: 0;
+  margin: 1.5rem 0 0;
   padding: 0;
   list-style: none;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #e5e7eb;
 }
 
 .release-list li {
-  display: grid;
-  grid-template-columns: minmax(140px, 180px) 1fr;
-  gap: 1.5rem;
+  list-style: none;
+}
+
+.release-item {
+  display: flex;
   align-items: center;
-  padding: 1.25rem 1.5rem;
-  border-top: 1px solid #e2e8f0;
-}
-
-.release-list li:first-of-type {
-  border-top-color: transparent;
-}
-
-.release-list time {
-  font-size: 1rem;
-  letter-spacing: 0.08em;
-  color: #0f172a;
-  font-weight: 600;
-}
-
-.release-list a {
-  color: #0f172a;
-  font-size: 1.05rem;
+  gap: 1.75rem;
+  padding: 0.85rem 0;
+  border-bottom: 1px solid #e5e7eb;
   text-decoration: none;
-  line-height: 1.6;
+  color: #111827;
+  transition: color 0.2s ease;
 }
 
-.release-list a:hover {
-  color: #2563eb;
-  text-decoration: underline;
+.release-item:hover,
+.release-item:focus-visible {
+  color: #1d4ed8;
+}
+
+.release-item time {
+  flex-shrink: 0;
+  min-width: 130px;
+  font-weight: 600;
+  letter-spacing: 0.05em;
+  color: currentColor;
+}
+
+.release-item__title {
+  flex: 1;
+  line-height: 1.7;
+}
+
+.release-item__icon {
+  font-size: 1.1rem;
+  color: currentColor;
 }
 
 .release-empty {
-  margin: 0;
-  padding: 2rem 1.5rem;
+  margin: 2rem 0 0;
   color: #64748b;
 }
 
 @media (max-width: 600px) {
-  .release-list li {
-    grid-template-columns: 1fr;
-    gap: 0.5rem;
+  .release-page {
+    padding: 2.5rem 1rem;
   }
 
-  .release-list time {
+  .release-item {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.35rem;
+  }
+
+  .release-item time {
+    min-width: auto;
     font-size: 0.95rem;
+  }
+
+  .release-item__icon {
+    display: none;
   }
 }
 </style>

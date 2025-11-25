@@ -16,7 +16,6 @@ collections:
     fields:
       - { label: "タイトル", name: "title", widget: "string" }
       - { label: "公開日", name: "date", widget: "datetime" }
-      - { label: "説明", name: "description", widget: "string" }
       - { label: "本文", name: "body", widget: "markdown" }
 
   - name: "pages"

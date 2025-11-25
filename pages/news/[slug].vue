@@ -1,4 +1,4 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import { queryCollection } from '#imports'
 
 const route = useRoute()
@@ -32,9 +32,6 @@ const formatDate = (value?: string | Date) => {
         <time :datetime="article?.date">{{ formatDate(article?.date) }}</time>
       </p>
       <h1>{{ article?.title }}</h1>
-      <p v-if="article?.description" class="article-page__description">
-        {{ article?.description }}
-      </p>
       <ContentRenderer :value="article" />
     </article>
   </main>
@@ -43,8 +40,8 @@ const formatDate = (value?: string | Date) => {
 <style scoped>
 .article-page {
   margin: 0 auto;
-  max-width: 760px;
-  padding: 3rem 1.5rem;
+  width: min(1100px, 100%);
+  padding: 2rem 0 3rem;
 }
 
 .article-page h1 {
@@ -67,12 +64,6 @@ const formatDate = (value?: string | Date) => {
   color: #059669;
 }
 
-.article-page__description {
-  color: #4b5563;
-  font-size: 1.05rem;
-  margin-bottom: 1.5rem;
-}
-
 :deep(h2) {
   margin-top: 2rem;
   margin-bottom: 0.5rem;
@@ -81,5 +72,18 @@ const formatDate = (value?: string | Date) => {
 :deep(p) {
   line-height: 1.85;
   margin-bottom: 1rem;
+}
+
+:deep(img) {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.25rem auto;
+}
+
+@media (max-width: 600px) {
+  .article-page {
+    padding: 2.5rem 1rem;
+  }
 }
 </style>

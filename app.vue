@@ -1,6 +1,8 @@
 <template>
   <NuxtLayout>
-    <NuxtPage />
+    <div class="page-container">
+      <NuxtPage />
+    </div>
   </NuxtLayout>
 </template>
 
@@ -19,5 +21,10 @@ body {
 
 a {
   color: inherit;
+}
+
+.page-container {
+  width: min(1200px, 100%);
+  margin: 0 auto;
 }
 </style>

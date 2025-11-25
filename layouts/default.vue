@@ -563,6 +563,10 @@ const toggleGroup = (key: string) => {
   }
 }
 </style>
+.layout__content {
+  width: min(1200px, 100%);
+  margin: 0 auto;
+}
 .layout__actions {
   display: flex;
   flex-direction: column;

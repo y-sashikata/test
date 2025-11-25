@@ -16,7 +16,6 @@ if (!page.value) {
 <template>
   <main class="doc-page">
     <article>
-      <p class="eyebrow">Page</p>
       <h1>{{ page?.title }}</h1>
       <ContentRenderer :value="page" />
     </article>
@@ -26,7 +25,7 @@ if (!page.value) {
 <style scoped>
 .doc-page {
   margin: 0 auto;
-  max-width: 760px;
+  max-width: 1100px;
   padding: 3rem 1.5rem;
 }
 
@@ -45,5 +44,12 @@ if (!page.value) {
 :deep(p) {
   line-height: 1.8;
   margin-bottom: 1rem;
+}
+
+:deep(img) {
+  max-width: 100%;
+  height: auto;
+  display: block;
+  margin: 1.25rem auto;
 }
 </style>
