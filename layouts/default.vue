@@ -1,155 +1,69 @@
-<script setup lang="ts">
-type NavChild = {
-  label: string
-  to: string
-}
+﻿<script setup lang="ts">
+import { computed, ref } from "vue"
+import { queryCollection } from "#imports"
 
-type NavGroup = {
-  title?: string
-  items: NavChild[]
-}
+type NavChild = { label: string; to: string; order?: number; children?: NavChild[] }
+type NavEntry = { label: string; to?: string; order?: number; children?: NavChild[] }
 
-type NavSection = {
-  label: string
-  to: string
-  groups?: NavGroup[]
-}
+type NavGroup = { title?: string; items: NavChild[] }
+type NavSection = { label: string; to?: string; groups?: NavGroup[] }
 
-const navSections: NavSection[] = [
-  {
-    label: '企業情報',
-    to: '/company',
-    groups: [
-      {
-        items: [
-          { label: 'ごあいさつ', to: '' },
-          { label: 'ニュースリリース', to: '/news' },
-          { label: '会社概要', to: '' },
-          { label: 'CSR', to: '' },
-          { label: '沿革', to: '' },
-          { label: 'SDGsへの取り組み', to: '' },
-          { label: 'ディーソルグループ 各地の事業拠点', to: '/solution/center' },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'IT SOLUTION',
-    to: '/it-solution',
-    groups: [
-      {
-        title: 'システム',
-        items: [
-          { label: 'AIの取り組み', to: '/system' },
-          { label: 'リカーエース', to: '' },
-          { label: '受発注業務支援サービス（EOS）', to: '' },
-          { label: '帳票Web配信サービス「Web Delivery Service」', to: '' },
-          { label: '働き方改革「業務まるごとテレワーク」', to: '' },
-          { label: '農業遠隔監視システム 「Sfumato」', to: '' },
-          { label: '販売管理システム', to: '' },
-          { label: '受発注業務支援サービス(EDI)', to: '' },
-        ],
-      },
-      {
-        title: 'アウトソーシング',
-        items: [
-          { label: '特定健診支援サービス', to: '' },
-          { label: '試験処理代行', to: '' },
-          { label: 'データ入力', to: '' },
-          { label: '受付業務', to: '' },
-          { label: '臨床検査関連', to: '' },
-          { label: '自治体関連', to: '' },
-          { label: 'データ処理', to: '' },
-          { label: '発送代行', to: '' },
-          { label: '予診票入力サービス', to: '' },
-          { label: '事務局運営', to: '' },
-          { label: 'WEBサービス', to: '' },
-          { label: '受注代行業務', to: '' },
-        ],
-      },
-      {
-        title: '印刷・発送',
-        items: [
-          { label: 'レジロールで広告・宣伝', to: '' },
-          { label: '流通向け印刷物', to: '' },
-          { label: '印字・データプリント', to: '' },
-          { label: '印刷サービス', to: '' },
-        ],
-      },
-    ],
-  },
-  {
-    label: 'PAPER SUPPLY',
-    to: '/paper-supply',
-    groups: [
-      {
-        title: '加工製品',
-        items: [
-          { label: 'クリアプレコ（半透明紙ホルダー）', to: '' },
-          { label: 'プレコ（紙ホルダー）', to: '' },
-          { label: '裏面広告レジロール', to: '' },
-          { label: 'ミニ製本', to: '' },
-        ],
-      },
-      {
-        title: '用紙関連',
-        items: [
-          { label: 'インクジェット用紙', to: '' },
-          { label: 'コピー・OA用紙', to: '' },
-          { label: '設計・製図・デザイン用紙', to: '' },
-          { label: '計測記録・情報記録用紙', to: '' },
-          { label: 'クリーンペーパー類', to: '' },
-          { label: '偽造防止用紙', to: '' },
-          { label: '測量野帳', to: '' },
-          { label: '製本・運搬材料', to: '' },
-          { label: 'メモシリーズ', to: '' },
-          { label: '用紙関連価格案内（プリンタ用ロール紙、プリンタ用シート紙、筆記用紙、製本材料、保管・運搬用品）', to: '' },
-        ],
-      },
-      {
-        title: 'ORM関連',
-        items: [
-          { label: '汎用マークシート', to: '' },
-          { label: 'OMR機器', to: '' },
-          { label: '採点ソフト', to: '' },
-        ],
-      },
-            {
-        title: 'その他',
-        items: [
-          { label: 'FSC認証材製品', to: '' },
-          { label: 'AED（レンタル・販売）', to: '' },
-          { label: 'ウレタンラック（医療品）', to: '' },
-        ],
-      },
-    ],
-  },
-  {
-    label: '採用情報',
-    to: '',
-  },
-  {
-    label: 'お問い合わせ',
-    to: '',
-  },
-]
+const { data: navItems } = await useAsyncData<NavEntry[]>(
+  'nav-menu',
+  () => queryCollection('nav').all(),
+  { default: () => [] }
+)
+
+const navSections = computed<NavSection[]>(() => {
+  const items = (navItems.value || [])
+    .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+    .map((item) => {
+      const children = item.children?.length
+        ? [...item.children]
+            .sort((a, b) => (a.order ?? 0) - (b.order ?? 0))
+            .map((child) => ({
+              ...child,
+              children: child.children
+                ?.slice()
+                .sort((a, b) => (a.order ?? 0) - (b.order ?? 0)),
+            }))
+        : []
+      return {
+        label: item.label,
+        to: children.length ? undefined : item.to,
+        groups: children.length
+          ? [
+              {
+                title: item.label,
+                items: children.map(({ label, to, children }) => ({
+                  label,
+                  to,
+                  children,
+                })),
+              },
+            ]
+          : undefined,
+      }
+    })
+  return items
+})
 
 const isMenuOpen = ref(false)
 const openSections = ref<Record<string, boolean>>({})
-const openGroups = ref<Record<string, boolean>>({})
+const openChildGroups = ref<Record<string, boolean>>({})
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
   if (!isMenuOpen.value) {
     openSections.value = {}
-    openGroups.value = {}
+    openChildGroups.value = {}
   }
 }
 
 const closeMenu = () => {
   isMenuOpen.value = false
   openSections.value = {}
-  openGroups.value = {}
+  openChildGroups.value = {}
 }
 
 const onSectionClick = (event: MouseEvent, section: NavSection) => {
@@ -168,12 +82,12 @@ const onSectionClick = (event: MouseEvent, section: NavSection) => {
 const groupKey = (section: NavSection, group: NavGroup, index: number) =>
   `${section.label}-${group.title ?? `group-${index}`}`
 
-const isGroupOpen = (key: string) => !!openGroups.value[key]
-
-const toggleGroup = (key: string) => {
-  openGroups.value = {
-    ...openGroups.value,
-    [key]: !isGroupOpen(key),
+const childKey = (section: NavSection, child: NavChild) => `${section.label}-${child.label}`
+const isChildOpen = (key: string) => !!openChildGroups.value[key]
+const toggleChild = (key: string) => {
+  openChildGroups.value = {
+    ...openChildGroups.value,
+    [key]: !isChildOpen(key),
   }
 }
 </script>
@@ -190,7 +104,7 @@ const toggleGroup = (key: string) => {
             <button class="nav-item__label" type="button" @click="onSectionClick($event, section)">
               {{ section.label }}
             </button>
-              <div
+            <div
               class="nav-item__dropdown"
               :class="{ 'nav-item__dropdown--open': openSections[section.label] }"
             >
@@ -199,31 +113,38 @@ const toggleGroup = (key: string) => {
                 :key="group.title ?? group.items[0]?.label ?? `group-${index}`"
                 class="nav-group"
               >
-                <button
-                  class="nav-group__toggle"
-                  type="button"
-                  @click="toggleGroup(groupKey(section, group, index))"
-                >
-                  <span>{{ group.title ?? section.label }}</span>
-                  <span
-                    class="nav-group__icon"
-                    :class="{ 'nav-group__icon--open': isGroupOpen(groupKey(section, group, index)) }"
-                  >
-                    ▾
-                  </span>
-                </button>
-                <transition name="nav-group__transition">
-                  <ul v-show="isGroupOpen(groupKey(section, group, index))" class="nav-group__list">
-                    <li v-for="child in group.items" :key="child.label">
+                <ul class="nav-group__list">
+                  <li v-for="child in group.items" :key="child.label">
+                    <template v-if="child.children?.length">
+                      <button
+                        class="nav-subtoggle"
+                        type="button"
+                        @click="toggleChild(childKey(section, child))"
+                      >
+                        <span>{{ child.label }}</span>
+                        <span
+                          class="nav-group__icon"
+                          :class="{ 'nav-group__icon--open': isChildOpen(childKey(section, child)) }"
+                        >
+                          ▾
+                        </span>
+                      </button>
+                      <ul v-show="isChildOpen(childKey(section, child))" class="nav-sublist">
+                        <li v-for="grand in child.children" :key="grand.label">
+                          <NuxtLink :to="grand.to || '#'" @click="closeMenu">{{ grand.label }}</NuxtLink>
+                        </li>
+                      </ul>
+                    </template>
+                    <template v-else>
                       <NuxtLink :to="child.to || '#'" @click="closeMenu">{{ child.label }}</NuxtLink>
-                    </li>
-                  </ul>
-                </transition>
+                    </template>
+                  </li>
+                </ul>
               </div>
             </div>
           </template>
           <template v-else>
-            <NuxtLink class="nav-item__label nav-item__label--link" :to="section.to" @click="closeMenu">
+            <NuxtLink class="nav-item__label nav-item__label--link" :to="section.to || '#'" @click="closeMenu">
               {{ section.label }}
             </NuxtLink>
           </template>
@@ -269,10 +190,10 @@ const toggleGroup = (key: string) => {
   gap: 1rem;
 }
 
-  .logo {
-    display: inline-flex;
-    align-items: center;
-  }
+.logo {
+  display: inline-flex;
+  align-items: center;
+}
 
 .logo__img {
   height: 40px;
@@ -372,7 +293,8 @@ const toggleGroup = (key: string) => {
   text-align: left;
 }
 
-.nav-group__toggle {
+.nav-group__toggle,
+.nav-subtoggle {
   border: 0;
   background: transparent;
   color: currentColor;
@@ -384,6 +306,12 @@ const toggleGroup = (key: string) => {
   gap: 0.5rem;
   cursor: pointer;
   padding: 0;
+}
+
+.nav-subtoggle {
+  width: 100%;
+  text-align: left;
+  font-weight: 600;
 }
 
 .nav-group__icon {
@@ -415,6 +343,25 @@ const toggleGroup = (key: string) => {
   word-break: break-word;
   line-height: 1.45;
   text-align: left;
+}
+
+.nav-sublist {
+  list-style: none;
+  margin: 0.35rem 0 0.35rem 0.6rem;
+  padding: 0;
+  border-left: 1px solid rgba(255, 255, 255, 0.4);
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.nav-sublist a {
+  color: #fff;
+  text-decoration: none;
+  font-weight: 500;
+  padding-left: 0.35rem;
+  display: block;
+  line-height: 1.4;
 }
 
 .nav-group__transition-enter-active,
@@ -452,7 +399,7 @@ const toggleGroup = (key: string) => {
 .layout__toggle span,
 .layout__toggle span::before,
 .layout__toggle span::after {
-  content: '';
+  content: "";
   position: absolute;
   width: 22px;
   height: 2px;
@@ -563,30 +510,17 @@ const toggleGroup = (key: string) => {
   }
 }
 </style>
+
+<style>
 .layout__content {
   width: min(1200px, 100%);
   margin: 0 auto;
 }
-.layout__actions {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  gap: 0.35rem;
-  flex-shrink: 0;
-}
+</style>
 
-.layout__phone {
-  font-weight: 700;
-  color: #111827;
-  text-decoration: none;
-}
 
-.btn-contact {
-  border: 1px solid #059669;
-  border-radius: 999px;
-  padding: 0.4rem 1.25rem;
-  background: #059669;
-  color: #fff;
-  text-decoration: none;
-  font-weight: 600;
-}
+
+
+
+
+

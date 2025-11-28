@@ -1,0 +1,43 @@
+{
+  "order": 3,
+  "children": [
+    {
+      "order": 0,
+      "children": [
+        {
+          "order": 0,
+          "label": "クリアプレコ",
+          "to": "/test"
+        },
+        {
+          "order": 1,
+          "label": "プレコ（紙ホルダー）",
+          "to": "/test"
+        },
+        {
+          "order": 2,
+          "label": "裏面広告レジロール",
+          "to": "/test"
+        },
+        {
+          "order": 3,
+          "label": "ミニ製本",
+          "to": "/test"
+        }
+      ],
+      "label": "加工製品"
+    },
+    {
+      "order": 1,
+      "label": "用紙関連",
+      "children": [
+        {
+          "order": 0,
+          "label": "インクジェット用紙",
+          "to": "/supply/paper"
+        }
+      ]
+    }
+  ],
+  "label": "PAPER SUPPLY"
+}

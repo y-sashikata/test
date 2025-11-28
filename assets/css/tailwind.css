@@ -1,0 +1,43 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer components {
+  .company-table {
+    @apply w-full my-4;
+    table {
+      @apply w-full border-collapse;
+    }
+    th {
+      @apply bg-sky-100 font-bold text-sm text-gray-800 px-3 py-2 border border-gray-200 align-top;
+      width: 24%;
+    }
+    td {
+      @apply px-3 py-2 border border-gray-200 text-gray-900;
+    }
+  }
+
+  h1 {
+    @apply text-xl font-bold mb-2 border-b border-gray-300 pb-1;
+    position: relative;
+    padding-left: 0.75rem;
+  }
+
+  h1::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    top: 0.2rem;
+    bottom: 0.2rem;
+    width: 4px;
+    background: linear-gradient(180deg, #1d4ed8 0%, #0b3c6f 100%);
+  }
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+body {
+  overflow-x: hidden;
+}

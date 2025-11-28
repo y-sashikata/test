@@ -8,6 +8,32 @@ media_folder: "public/uploads"
 public_folder: "/uploads"
 
 collections:
+  - name: "nav"
+    label: "ヘッダーメニュー"
+    folder: "content/nav"
+    create: true
+    slug: "{{slug}}"
+    format: "json"
+    fields:
+      - { label: "ラベル", name: "label", widget: "string" }
+      - { label: "リンク先", name: "to", widget: "string", required: false }
+      - { label: "並び順", name: "order", widget: "number", default: 0 }
+      - name: "children"
+        label: "子メニュー"
+        widget: "list"
+        required: false
+        fields:
+          - { label: "ラベル", name: "label", widget: "string" }
+          - { label: "リンク先", name: "to", widget: "string" }
+          - { label: "並び順", name: "order", widget: "number", default: 0 }
+          - name: "children"
+            label: "孫メニュー"
+            widget: "list"
+            required: false
+            fields:
+              - { label: "ラベル", name: "label", widget: "string" }
+              - { label: "リンク先", name: "to", widget: "string" }
+              - { label: "並び順", name: "order", widget: "number", default: 0 }
   - name: "news"
     label: "お知らせ"
     folder: "content/news"

@@ -1,0 +1,17 @@
+{
+  "order": 2,
+  "children": [
+    {
+      "order": 1,
+      "children": [
+        {
+          "order": 1,
+          "label": "AIの取り組み",
+          "to": "/test"
+        }
+      ],
+      "label": "システム"
+    }
+  ],
+  "label": "IT SOLUTION"
+}

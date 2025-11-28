@@ -4,8 +4,9 @@ const slug = route.params.slug
 const path = Array.isArray(slug) ? `/${slug.join('/')}` : `/${slug}`
 
 const { data: page } = await useAsyncData(
+  `page-${path}`,
   () => queryCollection('pages').path(path).first(),
-  { watch: [() => route.fullPath] }
+  { watch: [() => path] }
 )
 
 if (!page.value) {
@@ -16,7 +17,6 @@ if (!page.value) {
 <template>
   <main class="doc-page">
     <article>
-      <h1>{{ page?.title }}</h1>
       <ContentRenderer :value="page" />
     </article>
   </main>
