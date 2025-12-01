@@ -16,6 +16,28 @@
       "order": 3,
       "label": "沿革",
       "to": "/history"
+    },
+    {
+      "order": 4,
+      "label": "ディーソルグループ 各地の事業拠点",
+      "to": "/test"
+    },
+    {
+      "order": 5,
+      "label": "ニュースリリース",
+      "to": "/news",
+      "children": [
+        {
+          "order": 6,
+          "label": "CSR",
+          "to": "/test"
+        },
+        {
+          "order": 7,
+          "label": "SDGsへの取り組み",
+          "to": "/test"
+        }
+      ]
     }
   ],
   "label": "企業情報"
