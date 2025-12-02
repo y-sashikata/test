@@ -1,7 +1,7 @@
 ---
 title: CSR
-path: /news/csr
+path: /company/message/csr
 ---
 <h1>CSR</h1>
 
-ｔ
+

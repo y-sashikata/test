@@ -10,7 +10,7 @@
     {
       "order": 1,
       "label": "ごあいさつ",
-      "to": "/message"
+      "to": "/company/message"
     },
     {
       "order": 3,
@@ -31,7 +31,7 @@
     {
       "order": 6,
       "label": "CSR",
-      "to": "/news/csr"
+      "to": "/company/message/csr"
     },
     {
       "order": 7,
