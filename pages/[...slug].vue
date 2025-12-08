@@ -30,7 +30,7 @@ if (!page.value) {
 
 <template>
   <main class="doc-page">
-    <article>
+    <article class="doc-shell">
       <nav class="doc-breadcrumbs">
         <NuxtLink to="/">TOP</NuxtLink>
         <span v-if="breadcrumbs?.length"> &gt; </span>
@@ -39,7 +39,9 @@ if (!page.value) {
           <span v-if="index < breadcrumbs.length - 1"> &gt; </span>
         </template>
       </nav>
-      <ContentRenderer :value="page" />
+      <div class="doc-card">
+        <ContentRenderer :value="page" />
+      </div>
     </article>
   </main>
 </template>
@@ -48,7 +50,14 @@ if (!page.value) {
 .doc-page {
   margin: 0 auto;
   max-width: 1100px;
-  padding: 3rem 1.5rem;
+  padding: 4rem 1.75rem 3.5rem;
+  background: transparent;
+}
+
+.doc-shell {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
 }
 
 .doc-breadcrumbs {
@@ -69,8 +78,19 @@ if (!page.value) {
   color: #115e59;
 }
 
+.doc-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 2.25rem;
+  box-shadow: 0 18px 50px rgba(15, 23, 42, 0.08);
+  border: 1px solid #e5e7eb;
+}
+
 .doc-page h1 {
-  margin: 0 0 1rem;
+  margin: 0 0 1.25rem;
+  font-size: clamp(1.9rem, 3vw, 2.4rem);
+  letter-spacing: -0.01em;
+  color: #0f172a;
 }
 
 .eyebrow {
@@ -83,7 +103,9 @@ if (!page.value) {
 
 :deep(p) {
   line-height: 1.8;
-  margin-bottom: 1rem;
+  margin-bottom: 1.25rem;
+  color: #1f2937;
+  font-size: 1rem;
 }
 
 :deep(img) {
@@ -91,6 +113,8 @@ if (!page.value) {
   height: auto;
   display: block;
   margin: 1.25rem auto;
+  border-radius: 12px;
+  box-shadow: 0 10px 24px rgba(15, 23, 42, 0.08);
 }
 
 :deep(a) {
@@ -103,5 +127,28 @@ if (!page.value) {
 
 :deep(a:hover) {
   color: #115e59;
+}
+
+:deep(h2) {
+  margin: 2rem 0 0.75rem;
+  font-size: clamp(1.4rem, 2.4vw, 1.8rem);
+  color: #0f172a;
+}
+
+:deep(h3) {
+  margin: 1.5rem 0 0.5rem;
+  font-size: clamp(1.15rem, 2vw, 1.35rem);
+  color: #111827;
+}
+
+@media (max-width: 640px) {
+  .doc-page {
+    padding: 2.5rem 1.1rem 2.25rem;
+  }
+
+  .doc-card {
+    padding: 1.5rem;
+    border-radius: 14px;
+  }
 }
 </style>

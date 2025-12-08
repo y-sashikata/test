@@ -143,41 +143,41 @@ const promos = [
 <template>
   <main class="home">
     <section class="hero-visual">
-      <div class="hero__carousel" @mouseenter="stopSlider" @mouseleave="startSlider">
-        <ul class="carousel__track" :style="{ transform: `translateX(-${activeSlide * 100}%)` }">
-          <li v-for="slide in slides" :key="slide.title + slide.image" class="carousel__item">
-            <NuxtLink
-              v-if="slide.link"
-              class="carousel__link"
-              :to="slide.link"
-              @click="stopSlider"
-            >
-              <img :src="slide.image" :alt="slide.title" loading="lazy" />
-              <div class="carousel__caption">
-                <h3>{{ slide.title }}</h3>
-                <p>{{ slide.caption }}</p>
+        <div class="hero__carousel" @mouseenter="stopSlider" @mouseleave="startSlider">
+          <ul class="carousel__track" :style="{ transform: `translateX(-${activeSlide * 100}%)` }">
+            <li v-for="slide in slides" :key="slide.title + slide.image" class="carousel__item">
+              <NuxtLink
+                v-if="slide.link"
+                class="carousel__link"
+                :to="slide.link"
+                @click="stopSlider"
+              >
+                <img :src="slide.image" :alt="slide.title" loading="lazy" />
+                <div class="carousel__caption">
+                  <h3>{{ slide.title }}</h3>
+                  <p>{{ slide.caption }}</p>
+                </div>
+              </NuxtLink>
+              <div v-else class="carousel__link">
+                <img :src="slide.image" :alt="slide.title" loading="lazy" />
+                <div class="carousel__caption">
+                  <h3>{{ slide.title }}</h3>
+                  <p>{{ slide.caption }}</p>
+                </div>
               </div>
-            </NuxtLink>
-            <div v-else class="carousel__link">
-              <img :src="slide.image" :alt="slide.title" loading="lazy" />
-              <div class="carousel__caption">
-                <h3>{{ slide.title }}</h3>
-                <p>{{ slide.caption }}</p>
-              </div>
-            </div>
-          </li>
-        </ul>
-        <div class="carousel__dots">
-          <button
-            v-for="(slide, index) in slides"
-            :key="slide.title"
-            type="button"
-            :class="['carousel__dot', { active: index === activeSlide }]"
-            aria-label="スライド切替"
-            @click="goToSlide(index)"
-          ></button>
+            </li>
+          </ul>
+          <div class="carousel__dots">
+            <button
+              v-for="(slide, index) in slides"
+              :key="slide.title"
+              type="button"
+              :class="['carousel__dot', { active: index === activeSlide }]"
+              aria-label="スライド切替"
+              @click="goToSlide(index)"
+            ></button>
+          </div>
         </div>
-      </div>
     </section>
 
     <section class="promos">
@@ -207,11 +207,11 @@ const promos = [
 <style scoped>
 .home {
   margin: 0 auto;
-  max-width: 960px;
-  padding: 0 1.5rem 3rem;
+  max-width: 1100px;
+  padding: 1.5rem 1.75rem 3.5rem;
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 3rem;
 }
 
 .header {
@@ -302,13 +302,78 @@ const promos = [
   width: 100vw;
   margin-left: calc(50% - 50vw);
   margin-right: calc(50% - 50vw);
+  padding: 0 1rem;
+}
+
+.hero__shell {
+  width: min(1200px, 100%);
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 2rem;
+  align-items: center;
+  padding: 1rem 0 0;
+}
+
+.hero__copy {
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.hero__eyebrow {
+  font-size: 0.85rem;
+  letter-spacing: 0.18em;
+  color: #0f766e;
+  margin: 0;
+}
+
+.hero__copy h1 {
+  margin: 0;
+  font-size: clamp(2rem, 4vw, 2.8rem);
+  letter-spacing: -0.01em;
+  color: #0f172a;
+}
+
+.hero__lead {
+  font-size: 1.05rem;
+  line-height: 1.8;
+  color: #334155;
+  margin: 0;
+}
+
+.hero__actions {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+}
+
+.hero__btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 0.75rem 1.1rem;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #0f766e, #0ea5e9);
+  color: #fff;
+  text-decoration: none;
+  font-weight: 700;
+  box-shadow: 0 14px 30px rgba(14, 133, 123, 0.25);
+}
+
+.hero__btn--ghost {
+  background: transparent;
+  color: #0f172a;
+  border: 1px solid #cbd5e1;
+  box-shadow: none;
 }
 
 .hero__carousel {
   position: relative;
   overflow: hidden;
-  border-radius: 24px;
-  box-shadow: 0 20px 45px rgba(15, 23, 42, 0.15);
+  border-radius: 28px;
+  box-shadow: 0 24px 60px rgba(15, 23, 42, 0.14);
+  background: linear-gradient(135deg, rgba(15, 55, 147, 0.12), rgba(16, 185, 129, 0.12));
 }
 
 .carousel__track {
@@ -327,52 +392,106 @@ const promos = [
   height: 100%;
   color: inherit;
   text-decoration: none;
+  position: relative;
+  isolation: isolate;
 }
 
 .carousel__item img {
   width: 100%;
-  height: 620px;
+  height: 520px;
   object-fit: cover;
   object-position: center;
   display: block;
+  filter: saturate(1.05);
 }
 
 .carousel__caption {
   position: absolute;
-  left: 1.5rem;
-  right: 1.5rem;
-  bottom: 1.25rem;
-  background: rgba(15, 23, 42, 0.7);
+  left: 3rem;
+  right: 3rem;
+  bottom: 2rem;
+  background: rgba(15, 23, 42, 0.72);
   color: #fff;
-  border-radius: 12px;
-  padding: 1rem;
+  border-radius: 16px;
+  padding: 1.25rem 1.5rem;
+  backdrop-filter: blur(8px);
+  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.18);
 }
 
 .carousel__caption h3 {
-  margin: 0 0 0.35rem;
-  font-size: 1.1rem;
+  margin: 0 0 0.45rem;
+  font-size: 1.2rem;
+  letter-spacing: 0.01em;
 }
 
 .carousel__dots {
   position: absolute;
   left: 50%;
-  bottom: 0.75rem;
+  bottom: 1.1rem;
   transform: translateX(-50%);
   display: flex;
-  gap: 0.4rem;
+  gap: 0.5rem;
 }
 
 .carousel__dot {
-  width: 12px;
-  height: 12px;
+  width: 28px;
+  height: 8px;
   border-radius: 999px;
   border: 0;
-  background: rgba(255, 255, 255, 0.5);
+  background: rgba(255, 255, 255, 0.45);
   cursor: pointer;
+  transition: background 0.2s ease, width 0.2s ease;
 }
 
 .carousel__dot.active {
   background: #10b981;
+  width: 44px;
+}
+
+.quick-links {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1rem;
+}
+
+.quick-card {
+  background: #fff;
+  border-radius: 18px;
+  padding: 1.4rem 1.6rem;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 12px 30px rgba(15, 23, 42, 0.08);
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.quick-card__eyebrow {
+  font-size: 0.75rem;
+  letter-spacing: 0.18em;
+  color: #0f766e;
+  margin: 0;
+}
+
+.quick-card h3 {
+  margin: 0;
+  font-size: 1.15rem;
+  letter-spacing: -0.01em;
+  color: #0f172a;
+}
+
+.quick-card__cta {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  color: #0f766e;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.quick-card__cta::after {
+  content: '→';
+  font-size: 0.9rem;
+  color: inherit;
 }
 
 .hero {
@@ -406,31 +525,30 @@ const promos = [
 .promos {
   display: flex;
   flex-direction: column;
-  gap: 2.5rem;
+  gap: 2.75rem;
 }
 
 .promo-card {
   display: grid;
-  grid-template-columns: 1.3fr 0.7fr;
+  grid-template-columns: 1.1fr 0.9fr;
   gap: 1.5rem;
-  border-radius: 32px;
-  padding: 2.5rem;
-  color: #fff;
-  box-shadow: 0 30px 60px rgba(5, 28, 77, 0.25);
-}
-
-.promo-card--blue {
-  background: linear-gradient(135deg, #0f3793, #06255f);
-}
-
-.promo-card--green {
-  background: linear-gradient(135deg, #8db60e, #5f8d05);
+  border-radius: 28px;
+  padding: 2.25rem;
+  color: #0f172a;
+  background: #fff;
+  box-shadow: 0 24px 50px rgba(15, 23, 42, 0.12);
+  border: 1px solid #e5e7eb;
 }
 
 .promo-card__badge {
+  display: inline-block;
   font-weight: 700;
   letter-spacing: 0.1em;
   margin: 0 0 0.35rem;
+  color: #0f766e;
+  background: rgba(16, 185, 129, 0.12);
+  padding: 0.2rem 0.7rem;
+  border-radius: 999px;
 }
 
 .promo-card__heading {
@@ -443,14 +561,15 @@ const promos = [
 
 .promo-card__heading h3 {
   margin: 0;
-  font-size: 1.9rem;
+  font-size: 1.8rem;
+  letter-spacing: -0.01em;
 }
 
 .promo-card__campaign {
-  background: #fff;
-  color: #bd1f1f;
-  border-radius: 999px;
-  padding: 0.4rem 1rem;
+  background: #fff1f2;
+  color: #be123c;
+  border-radius: 12px;
+  padding: 0.5rem 0.9rem;
   display: flex;
   flex-direction: column;
   font-weight: 700;
@@ -459,7 +578,7 @@ const promos = [
 
 .promo-card__campaign small {
   color: #0f172a;
-  font-size: 0.7rem;
+  font-size: 0.75rem;
 }
 
 .promo-card__list {
@@ -469,6 +588,7 @@ const promos = [
   display: flex;
   flex-direction: column;
   gap: 0.35rem;
+  color: #1f2937;
 }
 
 .promo-card__list li {
@@ -480,12 +600,13 @@ const promos = [
   content: '•';
   position: absolute;
   left: 0;
-  color: rgba(255, 255, 255, 0.8);
+  color: #0f766e;
 }
 
 .promo-card__highlight {
   margin: 0.5rem 0 0;
   font-weight: 700;
+  color: #0f172a;
 }
 
 .promo-card__image {
@@ -495,16 +616,29 @@ const promos = [
 }
 
 .promo-card__image img {
-  max-width: 280px;
+  max-width: 260px;
   width: 100%;
-  border-radius: 14px;
-  background: #fff;
-  padding: 0.5rem;
+  border-radius: 16px;
+  background: #f8fafc;
+  padding: 0.75rem;
+  box-shadow: 0 14px 32px rgba(15, 23, 42, 0.1);
 }
 
 @media (max-width: 768px) {
   .home {
     padding-top: 0;
+  }
+
+  .hero__shell {
+    grid-template-columns: 1fr;
+  }
+
+  .hero__carousel {
+    order: 2;
+  }
+
+  .hero__copy {
+    order: 1;
   }
 
   .header__nav {
@@ -537,10 +671,18 @@ const promos = [
 
   .promo-card {
     grid-template-columns: 1fr;
+    gap: 1rem;
+    padding: 1.75rem;
   }
 
   .promo-card__image {
     justify-content: center;
+  }
+
+  .carousel__caption {
+    left: 1.25rem;
+    right: 1.25rem;
+    bottom: 1.25rem;
   }
 }
 </style>

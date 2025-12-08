@@ -1,5 +1,5 @@
 ﻿<script setup lang="ts">
-import { computed, ref } from "vue"
+import { computed, ref, onMounted, onBeforeUnmount } from "vue"
 import { queryCollection } from "#imports"
 
 type NavChild = { label: string; to: string; order?: number; children?: NavChild[] }
@@ -51,6 +51,24 @@ const navSections = computed<NavSection[]>(() => {
 const isMenuOpen = ref(false)
 const openSections = ref<Record<string, boolean>>({})
 const openChildGroups = ref<Record<string, boolean>>({})
+const isMobile = ref(false)
+
+const updateIsMobile = () => {
+  if (typeof window !== "undefined") {
+    isMobile.value = window.innerWidth <= 1100
+  }
+}
+
+onMounted(() => {
+  updateIsMobile()
+  window.addEventListener("resize", updateIsMobile)
+})
+
+onBeforeUnmount(() => {
+  if (typeof window !== "undefined") {
+    window.removeEventListener("resize", updateIsMobile)
+  }
+})
 
 const toggleMenu = () => {
   isMenuOpen.value = !isMenuOpen.value
@@ -70,8 +88,11 @@ const onSectionClick = (event: MouseEvent, section: NavSection) => {
   if (section.groups?.length) {
     event.preventDefault()
     const isOpen = !!openSections.value[section.label]
-    openSections.value = isOpen ? {} : { [section.label]: true }
-    if (!isMenuOpen.value && !isOpen) {
+    if (isOpen) {
+      closeMenu()
+    } else {
+      openSections.value = { [section.label]: true }
+      openChildGroups.value = {}
       isMenuOpen.value = true
     }
   } else {
@@ -102,45 +123,92 @@ const toggleChild = (key: string) => {
         <div v-for="section in navSections" :key="section.label" class="nav-item">
           <template v-if="section.groups?.length">
             <button class="nav-item__label" type="button" @click="onSectionClick($event, section)">
-              {{ section.label }}
+              <span>{{ section.label }}</span>
+              <span class="nav-item__chevron" :class="{ 'nav-item__chevron--open': openSections[section.label] }">
+                {{ openSections[section.label] ? "ー" : "＋" }}
+              </span>
             </button>
             <div
               class="nav-item__dropdown"
               :class="{ 'nav-item__dropdown--open': openSections[section.label] }"
             >
-              <div
-                v-for="(group, index) in section.groups"
-                :key="group.title ?? group.items[0]?.label ?? `group-${index}`"
-                class="nav-group"
-              >
-                <ul class="nav-group__list">
-                  <li v-for="child in group.items" :key="child.label">
-                    <template v-if="child.children?.length">
-                      <button
-                        class="nav-subtoggle"
-                        type="button"
-                        @click="toggleChild(childKey(section, child))"
-                      >
-                        <span>{{ child.label }}</span>
-                        <span
-                          class="nav-group__icon"
-                          :class="{ 'nav-group__icon--open': isChildOpen(childKey(section, child)) }"
-                        >
-                          ▾
-                        </span>
-                      </button>
-                      <ul v-show="isChildOpen(childKey(section, child))" class="nav-sublist">
-                        <li v-for="grand in child.children" :key="grand.label">
-                          <NuxtLink :to="grand.to || '#'" @click="closeMenu">{{ grand.label }}</NuxtLink>
+              <template v-if="isMobile">
+                <div class="nav-mobile">
+                  <div
+                    v-for="(group, index) in section.groups"
+                    :key="group.title ?? group.items[0]?.label ?? `group-mobile-${index}`"
+                    class="nav-group nav-group--mobile"
+                  >
+                    <ul class="nav-group__list nav-group__list--mobile">
+                      <li v-for="child in group.items" :key="child.label">
+                        <template v-if="child.children?.length">
+                          <button
+                            :class="['nav-subtoggle', { 'nav-subtoggle--open': isChildOpen(childKey(section, child)) }]"
+                            type="button"
+                            @click="toggleChild(childKey(section, child))"
+                          >
+                            <span>{{ child.label }}</span>
+                            <span
+                              class="nav-group__icon"
+                              :class="{ 'nav-group__icon--open': isChildOpen(childKey(section, child)) }"
+                              aria-hidden="true"
+                            ></span>
+                          </button>
+                          <ul v-show="isChildOpen(childKey(section, child))" class="nav-sublist">
+                            <li v-for="grand in child.children" :key="grand.label">
+                              <NuxtLink :to="grand.to || '#'" @click="closeMenu">{{ grand.label }}</NuxtLink>
+                            </li>
+                          </ul>
+                        </template>
+                        <template v-else>
+                          <NuxtLink :to="child.to || '#'" @click="closeMenu">{{ child.label }}</NuxtLink>
+                        </template>
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </template>
+              <template v-else>
+                <div class="nav-mega">
+                  <div class="nav-mega__intro">
+                    <p class="nav-mega__eyebrow">&gt;{{ section.label }}</p>
+                  </div>
+                  <div class="nav-mega__columns">
+                    <div
+                      v-for="(group, index) in section.groups"
+                      :key="group.title ?? group.items[0]?.label ?? `group-${index}`"
+                      class="nav-group"
+                    >
+                      <ul class="nav-group__list">
+                        <li v-for="child in group.items" :key="child.label">
+                          <template v-if="child.children?.length">
+                            <button
+                              :class="['nav-subtoggle', { 'nav-subtoggle--open': isChildOpen(childKey(section, child)) }]"
+                              type="button"
+                              @click="toggleChild(childKey(section, child))"
+                            >
+                              <span>{{ child.label }}</span>
+                              <span
+                                class="nav-group__icon"
+                                :class="{ 'nav-group__icon--open': isChildOpen(childKey(section, child)) }"
+                                aria-hidden="true"
+                              ></span>
+                            </button>
+                            <ul v-show="isChildOpen(childKey(section, child))" class="nav-sublist">
+                              <li v-for="grand in child.children" :key="grand.label">
+                                <NuxtLink :to="grand.to || '#'" @click="closeMenu">{{ grand.label }}</NuxtLink>
+                              </li>
+                            </ul>
+                          </template>
+                          <template v-else>
+                            <NuxtLink :to="child.to || '#'" @click="closeMenu">{{ child.label }}</NuxtLink>
+                          </template>
                         </li>
                       </ul>
-                    </template>
-                    <template v-else>
-                      <NuxtLink :to="child.to || '#'" @click="closeMenu">{{ child.label }}</NuxtLink>
-                    </template>
-                  </li>
-                </ul>
-              </div>
+                    </div>
+                  </div>
+                </div>
+              </template>
             </div>
           </template>
           <template v-else>
@@ -154,6 +222,7 @@ const toggleChild = (key: string) => {
         <span :class="{ open: isMenuOpen }"></span>
       </button>
     </header>
+    <div v-if="isMenuOpen" class="nav-overlay" @click="closeMenu"></div>
     <slot />
     <footer class="layout__footer">
       <ul>
@@ -173,21 +242,19 @@ const toggleChild = (key: string) => {
   flex-direction: column;
 }
 
-.layout__header,
-.layout__footer {
-  padding: 1rem 1.5rem;
-  background: #fff;
-  border-bottom: 1px solid #e5e7eb;
-}
-
 .layout__header {
+  padding: 0.95rem var(--header-padding-x, 2rem);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.9));
+  border-bottom: 1px solid #e5e7eb;
+  box-shadow: 0 10px 30px rgba(15, 23, 42, 0.06);
   display: flex;
   align-items: center;
   justify-content: space-between;
   position: sticky;
   top: 0;
-  z-index: 10;
-  gap: 1rem;
+  z-index: 30;
+  gap: 1.5rem;
+  min-height: var(--header-height, 80px);
 }
 
 .logo {
@@ -202,49 +269,47 @@ const toggleChild = (key: string) => {
 
 .layout__nav {
   display: flex;
-  align-items: stretch;
+  align-items: center;
   flex: 1;
-  justify-content: center;
-  margin: 0 auto;
-  margin-left: 30px;
+  justify-content: flex-end;
+  gap: 0;
 }
 
 .layout__nav a,
 .nav-item__label {
   text-decoration: none;
-  color: #1f2937;
-  font-weight: 600;
+  color: #0b2f61;
+  font-weight: 700;
+  letter-spacing: 0.01em;
 }
 
 .layout__nav a.router-link-active {
-  color: #059669;
+  color: #0d6fd3;
 }
 
 .nav-item {
   position: relative;
-  padding: 1rem;
-  border-left: 1px solid #d1d5db;
-  flex: 2;
+  padding: 0.2rem 0.5rem;
+  flex: none;
   display: flex;
-  flex-direction: column;
   align-items: center;
-  text-align: center;
-}
-
-.nav-item:last-child {
-  border-right: 1px solid #d1d5db;
+  transition: color 0.2s ease;
 }
 
 .nav-item__label {
   display: inline-flex;
   align-items: center;
   font-weight: 700;
+  letter-spacing: 0.02em;
   border: none;
   background: transparent;
-  padding: 0;
+  padding: 0.45rem 0.65rem;
   cursor: pointer;
   color: inherit;
   text-align: center;
+  gap: 0.5rem;
+  border-radius: 14px;
+  transition: background 0.2s ease, color 0.2s ease;
 }
 
 .nav-item__label--link {
@@ -252,44 +317,69 @@ const toggleChild = (key: string) => {
   border: 0;
   background: transparent;
   cursor: pointer;
+  position: relative;
+}
+
+.nav-item__label--link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -6px;
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(135deg, #0b3f79, #0d6fd3);
+  transform: scaleX(0);
+  transform-origin: left;
+  transition: transform 0.2s ease;
+}
+
+.nav-item__label--link:hover::after,
+.layout__nav a.router-link-active::after {
+  transform: scaleX(1);
+}
+
+.nav-item__label:hover {
+  background: #f1f5f9;
+  color: #0f4c81;
+}
+
+.nav-item__chevron {
+  font-size: 0.7rem;
+  color: #0f4c81;
 }
 
 .nav-item__dropdown {
-  position: absolute;
-  left: 0;
-  top: 100%;
-  transform: translateY(10px);
-  width: 100%;
-  background: #003f86;
-  color: #fff;
+  position: fixed;
+  left: 50%;
+  top: calc(var(--header-height, 80px) + 8px);
+  transform: translate(-50%, 12px);
+  width: calc(100% - (var(--header-padding-x, 2rem) * 2));
+  background: #fff;
+  color: #0f172a;
   padding: 2rem 2.5rem;
-  display: flex;
-  gap: 2rem;
+  display: block;
   opacity: 0;
   pointer-events: none;
   transition: 0.2s ease;
-  border-bottom-left-radius: 6px;
-  border-bottom-right-radius: 6px;
-  flex-wrap: wrap;
-  justify-content: flex-start;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 18px 60px rgba(0, 32, 81, 0.12);
   max-height: 70vh;
   overflow-y: auto;
-  min-width: 300px;
-  max-width: 300px;
+  z-index: 20;
 }
 
 .nav-item__dropdown--open {
   opacity: 1;
   pointer-events: auto;
-  transform: translateY(0);
+  transform: translate(-50%, 0);
 }
 
 .nav-group {
-  min-width: 200px;
-  max-width: 240px;
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.4rem;
+  gap: 0;
   text-align: left;
 }
 
@@ -311,16 +401,43 @@ const toggleChild = (key: string) => {
 .nav-subtoggle {
   width: 100%;
   text-align: left;
-  font-weight: 600;
+  font-weight: 700;
+  padding: 0.9rem 0.6rem;
+  border-radius: 10px;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
+}
+
+.nav-subtoggle:hover {
+  background: #eef2f7;
+  border-color: #cbd5e1;
+  color: #0b2f61;
+}
+
+.nav-subtoggle--open {
+  background: #e8f0fb;
+  border-color: #b6d0f6;
+  color: #0b2f61;
 }
 
 .nav-group__icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  height: 18px;
   font-size: 0.85rem;
+  color: #0f4c81;
   transition: transform 0.2s ease;
 }
 
+.nav-group__icon::before {
+  content: '>';
+}
+
 .nav-group__icon--open {
-  transform: rotate(180deg);
+  transform: rotate(90deg);
 }
 
 .nav-group__list {
@@ -329,39 +446,93 @@ const toggleChild = (key: string) => {
   margin: 0;
   display: flex;
   flex-direction: column;
-  gap: 0.35rem;
+  gap: 0;
 }
 
 .nav-group__list a {
-  color: #fff;
+  color: #0f4c81;
   text-decoration: none;
   font-weight: 500;
-  border-left: 2px solid rgba(255, 255, 255, 0.6);
-  padding-left: 0.4rem;
-  display: block;
+  padding: 0.9rem 0.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   white-space: normal;
   word-break: break-word;
   line-height: 1.45;
   text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+.nav-group__list a::after {
+  content: '>';
+  font-weight: 700;
+  color: #0f4c81;
+  padding-left: 0.35rem;
+}
+
+.nav-group__list li:last-child a {
+  border-bottom: none;
 }
 
 .nav-sublist {
   list-style: none;
   margin: 0.35rem 0 0.35rem 0.6rem;
   padding: 0;
-  border-left: 1px solid rgba(255, 255, 255, 0.4);
+  border-left: 1px solid rgba(15, 76, 129, 0.25);
   display: flex;
   flex-direction: column;
   gap: 0.25rem;
 }
 
 .nav-sublist a {
-  color: #fff;
+  color: #0f4c81;
   text-decoration: none;
   font-weight: 500;
   padding-left: 0.35rem;
   display: block;
   line-height: 1.4;
+}
+
+.nav-overlay {
+  position: fixed;
+  top: var(--header-height, 80px);
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(15, 23, 42, 0.35);
+  backdrop-filter: blur(1px);
+  z-index: 10;
+}
+
+.nav-mega {
+  display: grid;
+  grid-template-columns: 1fr 3fr;
+  gap: 2rem;
+  align-items: start;
+}
+
+.nav-mega__intro {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding-right: 1.5rem;
+  border-right: 1px solid #e5e7eb;
+}
+
+.nav-mega__eyebrow {
+  margin: 0;
+  color: #0f4c81;
+  font-size: 1.2rem;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.nav-mega__columns {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 1.5rem 2.5rem;
 }
 
 .nav-group__transition-enter-active,
@@ -376,14 +547,24 @@ const toggleChild = (key: string) => {
 }
 
 .layout__footer {
+  padding: 1rem 1.5rem;
+  background: #414d75;
+  color: #fff;
   margin-top: auto;
-  border-top: 1px solid #e5e7eb;
-  color: #6b7280;
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
   font-size: 0.9rem;
   display: flex;
   justify-content: space-between;
   flex-wrap: wrap;
   gap: 0.75rem;
+}
+
+.layout__footer a {
+  color: #fff;
+}
+
+.layout__footer p {
+  color: #fff;
 }
 
 .layout__toggle {
@@ -433,25 +614,32 @@ const toggleChild = (key: string) => {
   transform: translate(-50%, -6px) rotate(-45deg);
 }
 
-@media (max-width: 768px) {
+@media (max-width: 1100px) {
   .layout__nav {
-    position: absolute;
-    top: calc(100% + 0.5rem);
-    right: 1.5rem;
-    flex-direction: column;
-    align-items: flex-start;
-    padding: 1.5rem;
+    position: fixed;
+    top: var(--header-height, 80px);
+    left: 0;
+    right: 0;
+    bottom: 0;
+    padding: 1rem 1.25rem 2rem;
     background: #fff;
-    border: 1px solid #e5e7eb;
-    border-radius: 12px;
-    width: min(320px, 90vw);
-    box-shadow: 0 14px 30px rgba(15, 23, 42, 0.1);
+    border: none;
+    border-radius: 0;
+    width: 100vw;
+    height: auto;
+    box-shadow: none;
+    z-index: 30;
     opacity: 0;
     pointer-events: none;
-    transform: translateY(-10px);
+    transform: translateY(-8px);
     transition: 0.2s ease;
-    max-height: calc(100vh - 60px);
+    max-height: 100vh;
     overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
+    justify-content: flex-start;
+    gap: 0;
   }
 
   .layout__nav--open {
@@ -463,9 +651,20 @@ const toggleChild = (key: string) => {
   .nav-item {
     width: 100%;
     border: none;
-    padding: 0.5rem 0;
-    align-items: flex-start;
+    padding: 0.55rem 0 0.2rem;
+    align-items: stretch;
     text-align: left;
+    flex: none;
+    border-bottom: 1px solid #e2e8f0;
+    flex-direction: column;
+  }
+
+  .nav-item__label {
+    width: 100%;
+    justify-content: space-between;
+    padding: 0.55rem 0 0.2rem;
+    gap: 0.35rem;
+    font-size: 1rem;
   }
 
   .nav-item__dropdown {
@@ -473,32 +672,87 @@ const toggleChild = (key: string) => {
     opacity: 0;
     pointer-events: none;
     transform: none;
-    flex-direction: column;
-    gap: 1rem;
-    padding: 0.75rem;
+    padding: 0;
     border-radius: 0;
-    margin-top: 0.4rem;
+    margin-top: 0;
     display: none;
-    background: #003f86;
-    color: #fff;
+    background: transparent;
+    color: #0f172a;
+    border: none;
+    box-shadow: none;
     width: 100%;
     max-height: none;
     overflow: visible;
   }
 
-  .nav-group {
-    min-width: 100%;
-    max-width: 100%;
-  }
-
   .nav-item__dropdown--open {
-    display: flex;
+    display: block;
     opacity: 1;
     pointer-events: auto;
   }
 
+  .nav-group {
+    min-width: 100%;
+    max-width: 100%;
+    padding: 0;
+  }
+
+  .nav-group__list {
+    gap: 0;
+  }
+
+  .nav-group__list a {
+    border-left: none;
+    padding: 0.6rem 0;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .nav-group__list a::after {
+    content: '>';
+    font-weight: 700;
+    color: #0f4c81;
+    padding-left: 0.35rem;
+  }
+
+  .nav-group__list li:last-child a {
+    border-bottom: none;
+  }
+
+  .nav-sublist {
+    margin: 0.25rem 0 0.35rem 0.4rem;
+    border-left: 1px solid #e2e8f0;
+  }
+
+  .nav-sublist a {
+    padding: 0.4rem 0 0.4rem 0.35rem;
+    border-bottom: 1px solid #e2e8f0;
+  }
+
+  .nav-mega {
+    display: none;
+  }
+
+  .nav-mobile {
+    display: flex;
+    flex-direction: column;
+    gap: 0.15rem;
+    width: 100%;
+  }
+
+  .nav-group--mobile {
+    width: 100%;
+  }
+
+  .nav-group__list--mobile {
+    width: 100%;
+  }
+
   .layout__toggle {
     display: block;
+    position: fixed;
+    top: 12px;
+    right: 12px;
+    z-index: 40;
   }
 
   .layout__actions {
@@ -512,15 +766,22 @@ const toggleChild = (key: string) => {
 </style>
 
 <style>
+:root {
+  --header-height: 80px;
+  --header-padding-x: 2rem;
+}
+
 .layout__content {
   width: min(1200px, 100%);
   margin: 0 auto;
 }
+
+body {
+  background: #e8f3fc;
+}
+
+html {
+  scroll-padding-top: calc(var(--header-height, 80px) + 16px);
+}
+
 </style>
-
-
-
-
-
-
-
