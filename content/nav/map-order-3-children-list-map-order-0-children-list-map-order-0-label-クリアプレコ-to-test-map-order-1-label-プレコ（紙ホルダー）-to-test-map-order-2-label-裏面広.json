@@ -6,7 +6,7 @@
       "children": [
         {
           "order": 0,
-          "label": "クリアプレコ",
+          "label": "クリアプレコ（半透明紙ホルダー）",
           "to": "/test"
         },
         {
@@ -35,8 +35,93 @@
           "order": 0,
           "label": "インクジェット用紙",
           "to": "/supply/paper"
+        },
+        {
+          "order": 1,
+          "label": "コピー・OA用紙",
+          "to": "/test"
+        },
+        {
+          "order": 2,
+          "label": "設計・製図・デザイン用紙",
+          "to": "/test"
+        },
+        {
+          "order": 3,
+          "label": "計測記録・情報記録用紙",
+          "to": "/test"
+        },
+        {
+          "order": 4,
+          "label": "クリーンペーパー類",
+          "to": "/test"
+        },
+        {
+          "order": 5,
+          "label": "偽造防止用紙",
+          "to": "/test"
+        },
+        {
+          "order": 6,
+          "label": "測量野帳",
+          "to": "/test"
+        },
+        {
+          "order": 7,
+          "label": "製本・運搬材料",
+          "to": "/test"
+        },
+        {
+          "order": 8,
+          "label": "メモシリーズ",
+          "to": "/test"
+        },
+        {
+          "order": 9,
+          "label": "用紙関連価格案内（プリンタ用ロール紙、プリンタ用シート氏、筆記用紙、製本材料、保管・運搬用品",
+          "to": "/test"
         }
       ]
+    },{
+      "order": 2,
+      "children": [
+        {
+          "order": 0,
+          "label": "汎用マークシート",
+          "to": "/test"
+        },
+        {
+          "order": 1,
+          "label": "OMR機器",
+          "to": "/test"
+        },
+        {
+          "order": 2,
+          "label": "採点ソフト",
+          "to": "/test"
+        }
+      ],
+      "label": "OMR関連"
+    },{
+      "order": 3,
+      "children": [
+        {
+          "order": 0,
+          "label": "FSC認証材製品",
+          "to": "/test"
+        },
+        {
+          "order": 1,
+          "label": "AED（レンタル・販売）",
+          "to": "/test"
+        },
+        {
+          "order": 2,
+          "label": "ウレタンラック（医療品）",
+          "to": "/test"
+        }
+      ],
+      "label": "その他"
     }
   ],
   "label": "PAPER SUPPLY"

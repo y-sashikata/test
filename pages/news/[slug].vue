@@ -46,7 +46,9 @@ const formatDate = (value?: string | Date) => {
 
 .article-page h1 {
   margin: 0 0 0.5rem;
-  font-size: clamp(2rem, 4vw, 2.75rem);
+  font-size: clamp(1.6rem, 3.6vw, 2.2rem);
+  line-height: 1.25;
+  word-break: break-word;
 }
 
 .article-page__meta {

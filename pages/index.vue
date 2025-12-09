@@ -1,5 +1,6 @@
-<script setup lang="ts">
+﻿<script setup lang="ts">
 import type { ParsedContent } from '@nuxt/content'
+import { queryCollection } from '#imports'
 const navLinks = [
   { label: 'サービス', to: '/pages/service' },
   { label: '導入事例', to: '/pages/case' },
@@ -71,9 +72,9 @@ const promos = [
     badge: 'IT SOLUTION',
     title: 'WDSシステム',
     campaign: '6ヵ月無料キャンペーン実施中！！',
-    deadline: '※2025年11月申し込み限り',
-    description: ['シンプルで操作簡単なWEB請求書システムです。', 'コストダウン（郵送料・事務コスト）', 'スピード向上', '人的ミス削減', '受信側も登録ができる'],
-    highlight: '好評につき、スマホ対応版を公開しました',
+    deadline: '※2025年12月申し込み限り',
+    description: ['シンプルで操作簡単なWEB請求書システムです。', '・コストダウン（郵送料・事務コスト）', '・スピード向上', '・人的ミス削減', '・受信開封確認ができる'],
+    highlight: '好評につき、スマホ対応版を用意しました',
     image: '/images/WDS_PCと請求書_20251029_small.png',
     theme: 'blue',
   },
@@ -83,7 +84,7 @@ const promos = [
     campaign: 'サンプル無料配布中！！',
     description: [
       'クリアプレコは、100%紙製のクリアホルダーです。',
-      '環境にやさしく、耐水性と強度、半透明がきれいに際立つ製品です。A4、A5、B6サイズを用意しました。会社ロゴを印刷したオリジナルをお送りします。お問い合わせよりお申込みください。',
+      '環境にやさしく、耐水性に優れ、半透明がきれいに際立つ製品です。A4,A5,B6サイズを用意しました。会社ロゴを印刷したオリジナルをお送りします。お問い合わせよりお申込みください。',
     ],
     image: '/images/HPクリアプレコ_20240722_2_2.png',
     theme: 'green',
@@ -92,12 +93,12 @@ const promos = [
     badge: 'IT SOLUTION',
     title: 'スマホ発注WEB（EOSサービス）',
     description: [
-      '直感的に使える簡単操作',
-      'いつでもどこでも注文可能',
-      '受注作業にかかる作業時間削減',
-      '注文受付時間の大幅延長',
-      '専用サーバーなどの設備要件なし',
-      'バーコード(JAN)読み取り 新機能2024年6月～',
+      '・直感的にわかる簡単注文',
+      '・いつでもどこでも注文可能',
+      '・受注作業にかかわる経費削減',
+      '・注文受付時の入力ミスなし',
+      '・専用サーバなどの設備投資なし',
+      '・バーコード(JAN)読み取り 新機能2024年6月～',
     ],
     image: '/images/EOSスマホ_調整.png',
     theme: 'blue',
@@ -107,9 +108,9 @@ const promos = [
     title: '紙を捨てないDX',
     description: [
       '自治体DXへのご提案',
-      '行政業務が抱える課題',
-      'ティーソルの特徴と強み',
-      'ティーソルが提供する解決策例',
+      '1.行政業務が抱える課題',
+      '2.ディーソルの特徴と強み',
+      '3.ディーソルが提供する解決実例',
       '導入事例（例）',
       'システム連携・構成（例）',
       '今後の展望',
@@ -122,6 +123,7 @@ const promos = [
     badge: 'IT SOLUTION',
     title: '',
     description: [
+      '情報処理のワントップサービスです。',
       '「入力」「開発」「処理」「出力」サービスを提供します。',
       '全国の自社センターをセキュリティ通信網で結び、一連の流れを実現しました。',
     ],
@@ -132,56 +134,71 @@ const promos = [
     badge: 'PAPER SUPPLY',
     title: '',
     description: [
-      '情報媒体としての製品を自社の生産ラインで製造しています。使用目的に応じて、大量から少量まで、柔軟に対応いたします。感圧紙、特殊紙加工、製本など印刷にかかわるもの全般を提供します。',
+      '情報媒体としての製品を自社の生産ラインで製造しています。使用目的に応じて、大量から少量まで、柔軟に対応いたします。帳票作成、特殊紙加工、製本など印刷にかかわるもの全般を提供します。',
     ],
     image: '',
     theme: 'green',
   },
 ]
+
+const { data: latestNews } = await useAsyncData<ParsedContent[]>(
+  'home-news',
+  () => queryCollection('news').order('date', 'DESC').limit(3).all(),
+  { default: () => [] }
+)
+
+const formatDate = (value?: string | Date) => {
+  if (!value) return ''
+  const date = new Date(value)
+  const y = date.getFullYear()
+  const m = `${date.getMonth() + 1}`.padStart(2, '0')
+  const d = `${date.getDate()}`.padStart(2, '0')
+  return `${y}.${m}.${d}`
+}
 </script>
 
 <template>
   <main class="home">
     <section class="hero-visual">
-        <div class="hero__carousel" @mouseenter="stopSlider" @mouseleave="startSlider">
-          <ul class="carousel__track" :style="{ transform: `translateX(-${activeSlide * 100}%)` }">
-            <li v-for="slide in slides" :key="slide.title + slide.image" class="carousel__item">
-              <NuxtLink
-                v-if="slide.link"
-                class="carousel__link"
-                :to="slide.link"
-                @click="stopSlider"
-              >
-                <img :src="slide.image" :alt="slide.title" loading="lazy" />
-                <div class="carousel__caption">
-                  <h3>{{ slide.title }}</h3>
-                  <p>{{ slide.caption }}</p>
-                </div>
-              </NuxtLink>
-              <div v-else class="carousel__link">
-                <img :src="slide.image" :alt="slide.title" loading="lazy" />
-                <div class="carousel__caption">
-                  <h3>{{ slide.title }}</h3>
-                  <p>{{ slide.caption }}</p>
-                </div>
-              </div>
-            </li>
-          </ul>
-          <div class="carousel__dots">
-            <button
-              v-for="(slide, index) in slides"
-              :key="slide.title"
-              type="button"
-              :class="['carousel__dot', { active: index === activeSlide }]"
-              aria-label="スライド切替"
-              @click="goToSlide(index)"
-            ></button>
-          </div>
+      <div class="hero__carousel" @mouseenter="stopSlider" @mouseleave="startSlider">
+        <ul class="carousel__track" :style="{ transform: `translateX(-${activeSlide * 100}%)` }">
+          <li v-for="slide in slides" :key="slide.title + slide.image" class="carousel__item">
+            <NuxtLink
+              v-if="slide.link"
+              class="carousel__link"
+              :to="slide.link"
+              @click="stopSlider"
+            >
+              <img :src="slide.image" :alt="slide.title || slide.caption" loading="lazy" />
+            </NuxtLink>
+            <div v-else class="carousel__link">
+              <img :src="slide.image" :alt="slide.title || slide.caption" loading="lazy" />
+            </div>
+          </li>
+        </ul>
+        <div class="carousel__dots">
+          <button
+            v-for="(slide, index) in slides"
+            :key="slide.title + index"
+            type="button"
+            :class="['carousel__dot', { active: index === activeSlide }]"
+            aria-label="繧ｹ繝ｩ繧､繝牙・譖ｿ"
+            @click="goToSlide(index)"
+          ></button>
         </div>
+      </div>
     </section>
 
     <section class="promos">
-      <article v-for="promo in promos" :key="promo.title" class="promo-card" :class="`promo-card--${promo.theme}`">
+      <article
+        v-for="promo in promos"
+        :key="promo.title"
+        class="promo-card"
+        :class="[
+          `promo-card--${promo.theme}`,
+          { 'promo-card--noimage': !promo.image }
+        ]"
+      >
         <div class="promo-card__content">
           <p class="promo-card__badge">{{ promo.badge }}</p>
           <div class="promo-card__heading">
@@ -191,15 +208,30 @@ const promos = [
               <small v-if="promo.deadline">{{ promo.deadline }}</small>
             </div>
           </div>
-          <ul class="promo-card__list">
-            <li v-for="line in promo.description" :key="line">{{ line }}</li>
-          </ul>
+          <div class="promo-card__lines">
+            <p v-for="line in promo.description" :key="line">{{ line }}</p>
+          </div>
           <p v-if="promo.highlight" class="promo-card__highlight">{{ promo.highlight }}</p>
         </div>
         <div class="promo-card__image">
-          <img :src="promo.image" :alt="promo.title" />
+          <img v-if="promo.image" :src="promo.image" :alt="promo.title" />
         </div>
       </article>
+        </section>
+
+    <section class="home-news" v-if="latestNews?.length">
+      <div class="home-news__header">
+        <h2>ニュースリリース</h2>
+        <NuxtLink class="home-news__more" to="/news">READ MORE</NuxtLink>
+      </div>
+      <ul class="home-news__list">
+        <li v-for="article in latestNews" :key="article._path || article.path" class="home-news__item">
+          <NuxtLink :to="(article._path || article.path) ?? '#'" class="home-news__link">
+            <time :datetime="(article.date as string) || ''">{{ formatDate(article.date as string) }}</time>
+            <span class="home-news__title">{{ article.title }}</span>
+          </NuxtLink>
+        </li>
+      </ul>
     </section>
   </main>
 </template>
@@ -299,73 +331,6 @@ const promos = [
 
 .hero-visual {
   margin-top: 0.5rem;
-  width: 100vw;
-  margin-left: calc(50% - 50vw);
-  margin-right: calc(50% - 50vw);
-  padding: 0 1rem;
-}
-
-.hero__shell {
-  width: min(1200px, 100%);
-  margin: 0 auto;
-  display: grid;
-  grid-template-columns: 1fr 1.1fr;
-  gap: 2rem;
-  align-items: center;
-  padding: 1rem 0 0;
-}
-
-.hero__copy {
-  display: flex;
-  flex-direction: column;
-  gap: 0.9rem;
-}
-
-.hero__eyebrow {
-  font-size: 0.85rem;
-  letter-spacing: 0.18em;
-  color: #0f766e;
-  margin: 0;
-}
-
-.hero__copy h1 {
-  margin: 0;
-  font-size: clamp(2rem, 4vw, 2.8rem);
-  letter-spacing: -0.01em;
-  color: #0f172a;
-}
-
-.hero__lead {
-  font-size: 1.05rem;
-  line-height: 1.8;
-  color: #334155;
-  margin: 0;
-}
-
-.hero__actions {
-  display: flex;
-  gap: 0.75rem;
-  flex-wrap: wrap;
-}
-
-.hero__btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.4rem;
-  padding: 0.75rem 1.1rem;
-  border-radius: 999px;
-  background: linear-gradient(135deg, #0f766e, #0ea5e9);
-  color: #fff;
-  text-decoration: none;
-  font-weight: 700;
-  box-shadow: 0 14px 30px rgba(14, 133, 123, 0.25);
-}
-
-.hero__btn--ghost {
-  background: transparent;
-  color: #0f172a;
-  border: 1px solid #cbd5e1;
-  box-shadow: none;
 }
 
 .hero__carousel {
@@ -374,6 +339,10 @@ const promos = [
   border-radius: 28px;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.14);
   background: linear-gradient(135deg, rgba(15, 55, 147, 0.12), rgba(16, 185, 129, 0.12));
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  max-height: 65vh;
+  min-height: 320px;
 }
 
 .carousel__track {
@@ -382,8 +351,8 @@ const promos = [
 }
 
 .carousel__item {
-  flex: 0 0 100vw;
-  min-width: 100vw;
+  flex: 0 0 100%;
+  min-width: 100%;
   position: relative;
 }
 
@@ -398,30 +367,11 @@ const promos = [
 
 .carousel__item img {
   width: 100%;
-  height: 520px;
+  height: 100%;
   object-fit: cover;
   object-position: center;
   display: block;
   filter: saturate(1.05);
-}
-
-.carousel__caption {
-  position: absolute;
-  left: 3rem;
-  right: 3rem;
-  bottom: 2rem;
-  background: rgba(15, 23, 42, 0.72);
-  color: #fff;
-  border-radius: 16px;
-  padding: 1.25rem 1.5rem;
-  backdrop-filter: blur(8px);
-  box-shadow: 0 20px 30px rgba(0, 0, 0, 0.18);
-}
-
-.carousel__caption h3 {
-  margin: 0 0 0.45rem;
-  font-size: 1.2rem;
-  letter-spacing: 0.01em;
 }
 
 .carousel__dots {
@@ -438,14 +388,16 @@ const promos = [
   height: 8px;
   border-radius: 999px;
   border: 0;
-  background: rgba(255, 255, 255, 0.45);
+  background: rgba(255, 255, 255, 0.4);
   cursor: pointer;
   transition: background 0.2s ease, width 0.2s ease;
+  box-shadow: 0 0 0 1px rgba(15, 23, 42, 0.08);
 }
 
 .carousel__dot.active {
-  background: #10b981;
+  background: linear-gradient(135deg, #0ea5e9, #10b981);
   width: 44px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.3);
 }
 
 .quick-links {
@@ -528,6 +480,83 @@ const promos = [
   gap: 2.75rem;
 }
 
+.home-news {
+  width: min(1100px, 100%);
+  margin: 0 auto;
+  padding: 1rem 0 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.home-news__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.home-news__header h2 {
+  margin: 0;
+  font-size: clamp(1.4rem, 3vw, 1.7rem);
+  letter-spacing: -0.01em;
+}
+
+.home-news__more {
+  text-decoration: none;
+  font-weight: 700;
+  color: #0f766e;
+  border: 1px solid #0f766e;
+  border-radius: 999px;
+  padding: 0.4rem 0.9rem;
+  font-size: 0.95rem;
+  transition: background 0.2s ease, color 0.2s ease;
+}
+
+.home-news__more:hover {
+  background: #0f766e;
+  color: #fff;
+}
+
+.home-news__list {
+  list-style: none;
+  margin: 0.25rem 0 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  border-top: 1px solid #e5e7eb;
+}
+
+.home-news__item {
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.home-news__link {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  padding: 0.8rem 0;
+  text-decoration: none;
+  color: #0f172a;
+  transition: color 0.2s ease;
+}
+
+.home-news__link:hover {
+  color: #0f766e;
+}
+
+.home-news__link time {
+  flex-shrink: 0;
+  min-width: 125px;
+  font-weight: 700;
+  letter-spacing: 0.05em;
+}
+
+.home-news__title {
+  flex: 1;
+  line-height: 1.6;
+}
+
 .promo-card {
   display: grid;
   grid-template-columns: 1.1fr 0.9fr;
@@ -538,6 +567,20 @@ const promos = [
   background: #fff;
   box-shadow: 0 24px 50px rgba(15, 23, 42, 0.12);
   border: 1px solid #e5e7eb;
+}
+
+.promo-card--blue {
+  border-color: rgba(59, 130, 246, 0.35);
+  background: linear-gradient(180deg, rgba(59, 130, 246, 0.12), #fff);
+}
+
+.promo-card--green {
+  border-color: rgba(16, 185, 129, 0.35);
+  background: linear-gradient(180deg, rgba(16, 185, 129, 0.12), #fff);
+}
+
+.promo-card--noimage {
+  grid-template-columns: 1fr;
 }
 
 .promo-card__badge {
@@ -581,8 +624,7 @@ const promos = [
   font-size: 0.75rem;
 }
 
-.promo-card__list {
-  list-style: none;
+.promo-card__lines {
   margin: 0.75rem 0;
   padding: 0;
   display: flex;
@@ -591,16 +633,9 @@ const promos = [
   color: #1f2937;
 }
 
-.promo-card__list li {
-  position: relative;
-  padding-left: 1.1rem;
-}
-
-.promo-card__list li::before {
-  content: '•';
-  position: absolute;
-  left: 0;
-  color: #0f766e;
+.promo-card__lines p {
+  margin: 0;
+  line-height: 1.6;
 }
 
 .promo-card__highlight {
@@ -680,9 +715,13 @@ const promos = [
   }
 
   .carousel__caption {
-    left: 1.25rem;
-    right: 1.25rem;
-    bottom: 1.25rem;
+    max-width: 100%;
+  }
+
+  .hero__carousel {
+    aspect-ratio: 4 / 3;
+    max-height: 55vh;
+    min-height: 260px;
   }
 }
 </style>

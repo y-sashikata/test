@@ -8,9 +8,114 @@
           "order": 1,
           "label": "AIの取り組み",
           "to": "/test"
+        },{
+          "order": 2,
+          "label": "帳票Web配信サービス「Web Delivery service」",
+          "to": "/test"
+        },{
+          "order": 3,
+          "label": "働き方改革「業務まるごとテレワーク」",
+          "to": "/test"
+        },{
+          "order": 4,
+          "label": "リカエース",
+          "to": "/test"
+        },{
+          "order": 5,
+          "label": "農業沿革システム「Sfumato」",
+          "to": "/test"
+        },{
+          "order": 6,
+          "label": "販売管理システム",
+          "to": "/test"
+        },{
+          "order": 7,
+          "label": "受発注業務支援サービス（EOS）",
+          "to": "/test"
+        },{
+          "order": 8,
+          "label": "受発注業務支援サービス（EDI）",
+          "to": "/test"
         }
       ],
       "label": "システム"
+    },    {
+      "order": 2,
+      "children": [
+        {
+          "order": 1,
+          "label": "特定検診支援サービス",
+          "to": "/test"
+        },{
+          "order": 2,
+          "label": "臨床検査関連",
+          "to": "/test"
+        },{
+          "order": 3,
+          "label": "予診票入力サービス",
+          "to": "/test"
+        },{
+          "order": 4,
+          "label": "試験処理代行",
+          "to": "/test"
+        },{
+          "order": 5,
+          "label": "自治体関連",
+          "to": "/test"
+        },{
+          "order": 6,
+          "label": "事務局運営",
+          "to": "/test"
+        },{
+          "order": 7,
+          "label": "データ入力",
+          "to": "/test"
+        },{
+          "order": 8,
+          "label": "データ処理",
+          "to": "/test"
+        },{
+          "order": 9,
+          "label": "WEBサービス",
+          "to": "/test"
+        },{
+          "order": 10,
+          "label": "受付業務",
+          "to": "/test"
+        },{
+          "order": 11,
+          "label": "発送代行",
+          "to": "/test"
+        },{
+          "order": 12,
+          "label": "受注代行運用",
+          "to": "/test"
+        }
+      ],
+      "label": "アウトソーシング"
+    },
+    {
+      "order": 3,
+      "children": [
+        {
+          "order": 1,
+          "label": "レジロールで広告・宣伝",
+          "to": "/test"
+        },{
+          "order": 2,
+          "label": "印刷サービス",
+          "to": "/test"
+        },{
+          "order": 3,
+          "label": "印字・データプリント",
+          "to": "/test"
+        },{
+          "order": 4,
+          "label": "流通向け印刷物",
+          "to": "/test"
+        }
+      ],
+      "label": "印刷・発送"
     }
   ],
   "label": "IT SOLUTION"

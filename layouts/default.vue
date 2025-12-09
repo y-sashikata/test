@@ -89,7 +89,9 @@ const onSectionClick = (event: MouseEvent, section: NavSection) => {
     event.preventDefault()
     const isOpen = !!openSections.value[section.label]
     if (isOpen) {
-      closeMenu()
+      openSections.value = {}
+      openChildGroups.value = {}
+      isMenuOpen.value = true
     } else {
       openSections.value = { [section.label]: true }
       openChildGroups.value = {}
