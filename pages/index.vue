@@ -331,6 +331,10 @@ const formatDate = (value?: string | Date) => {
 
 .hero-visual {
   margin-top: 0.5rem;
+  width: 100vw;
+  margin-left: calc(50% - 50vw);
+  margin-right: calc(50% - 50vw);
+  padding: 0 1rem;
 }
 
 .hero__carousel {
@@ -338,22 +342,24 @@ const formatDate = (value?: string | Date) => {
   overflow: hidden;
   border-radius: 28px;
   box-shadow: 0 24px 60px rgba(15, 23, 42, 0.14);
-  background: linear-gradient(135deg, rgba(15, 55, 147, 0.12), rgba(16, 185, 129, 0.12));
+  background: #f5f7fb;
   width: 100%;
-  aspect-ratio: 16 / 9;
-  max-height: 65vh;
+  height: 420px;
+  max-height: 70vh;
   min-height: 320px;
 }
 
 .carousel__track {
   display: flex;
   transition: transform 0.6s ease;
+  height: 100%;
 }
 
 .carousel__item {
   flex: 0 0 100%;
   min-width: 100%;
   position: relative;
+  height: 100%;
 }
 
 .carousel__link {
@@ -368,10 +374,10 @@ const formatDate = (value?: string | Date) => {
 .carousel__item img {
   width: 100%;
   height: 100%;
-  object-fit: cover;
+  object-fit: contain;
   object-position: center;
   display: block;
-  filter: saturate(1.05);
+  background: #f5f7fb;
 }
 
 .carousel__dots {
@@ -714,14 +720,10 @@ const formatDate = (value?: string | Date) => {
     justify-content: center;
   }
 
-  .carousel__caption {
-    max-width: 100%;
-  }
-
   .hero__carousel {
-    aspect-ratio: 4 / 3;
+    height: 280px;
     max-height: 55vh;
-    min-height: 260px;
+    min-height: 220px;
   }
 }
 </style>
